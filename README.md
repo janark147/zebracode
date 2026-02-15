@@ -64,7 +64,7 @@ A structured workflow framework for [Claude Code](https://docs.anthropic.com/en/
 ### Quick Install
 
 ```bash
-git clone <repo-url> ~/zebracode
+git clone https://github.com/janark147/zebracode ~/zebracode
 cd ~/zebracode
 ./install.sh
 ```
