@@ -49,16 +49,47 @@ done
 # No plan file = allow stop
 [[ -z "$PLAN_FILE" ]] && exit 0
 
-# Find the currently active phase (last phase with at least one checked item
-# but also at least one unchecked item)
-CHECKED=$(grep -c '\- \[x\]' "$PLAN_FILE" 2>/dev/null) || CHECKED=0
-UNCHECKED=$(grep -c '\- \[ \]' "$PLAN_FILE" 2>/dev/null) || UNCHECKED=0
+# Count unchecked items only in phases that have been started (have at least one [x])
+# Phases are delimited by "## Phase" headings
+TOTAL_CHECKED=0
+TOTAL_UNCHECKED=0
+IN_PHASE=false
+PHASE_CHECKED=0
+PHASE_UNCHECKED=0
 
-# If nothing is checked or nothing is unchecked, allow stop
-[[ "$CHECKED" -eq 0 ]] && exit 0
-[[ "$UNCHECKED" -eq 0 ]] && exit 0
+while IFS= read -r line; do
+  # Detect phase boundary
+  if [[ "$line" =~ ^##\ Phase ]]; then
+    # Tally previous phase if it was started (has checked items) but incomplete
+    if [[ "$PHASE_CHECKED" -gt 0 && "$PHASE_UNCHECKED" -gt 0 ]]; then
+      TOTAL_CHECKED=$((TOTAL_CHECKED + PHASE_CHECKED))
+      TOTAL_UNCHECKED=$((TOTAL_UNCHECKED + PHASE_UNCHECKED))
+    fi
+    PHASE_CHECKED=0
+    PHASE_UNCHECKED=0
+    IN_PHASE=true
+    continue
+  fi
+  # Count checkboxes within a phase
+  if [[ "$IN_PHASE" == true ]]; then
+    if [[ "$line" =~ ^[[:space:]]*-\ \[x\] ]]; then
+      PHASE_CHECKED=$((PHASE_CHECKED + 1))
+    elif [[ "$line" =~ ^[[:space:]]*-\ \[\ \] ]]; then
+      PHASE_UNCHECKED=$((PHASE_UNCHECKED + 1))
+    fi
+  fi
+done < "$PLAN_FILE"
 
-# There are unchecked items — set the guard file and block
+# Tally the last phase
+if [[ "$PHASE_CHECKED" -gt 0 && "$PHASE_UNCHECKED" -gt 0 ]]; then
+  TOTAL_CHECKED=$((TOTAL_CHECKED + PHASE_CHECKED))
+  TOTAL_UNCHECKED=$((TOTAL_UNCHECKED + PHASE_UNCHECKED))
+fi
+
+# If no started phase has unchecked items, allow stop
+[[ "$TOTAL_UNCHECKED" -eq 0 ]] && exit 0
+
+# There are unchecked items in started phases — set the guard file and block
 touch "$GUARD_FILE"
 
 cat <<EOF
@@ -66,7 +97,7 @@ cat <<EOF
   "hookSpecificOutput": {
     "hookEventName": "Stop",
     "decision": "block",
-    "reason": "Incomplete items found: ${UNCHECKED} unchecked task(s) in the plan (${CHECKED} completed). Are you sure you want to stop? If yes, stop again to confirm."
+    "reason": "Incomplete items found: ${TOTAL_UNCHECKED} unchecked task(s) in started phases (${TOTAL_CHECKED} completed). Are you sure you want to stop? If yes, stop again to confirm."
   }
 }
 EOF
