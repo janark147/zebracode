@@ -26,6 +26,12 @@ stack:
   formatter: null                     # "prettier" | "eslint" | "pint" | null
   linter: null                        # "eslint" | "phpstan" | "phpcs" | null
 
+context7_ids:                         # Pre-resolved Context7 library IDs (skip resolve-library-id calls)
+  # framework: "/laravel/laravel"
+  # frontend: "/vuejs/core"
+  # css: "/tailwindlabs/tailwindcss"
+  # test_runner: "/sebastianbergmann/phpunit"
+
 commands:
   test_backend: null                  # e.g., "./vendor/bin/sail test", "npm test"
   test_frontend: null

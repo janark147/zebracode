@@ -11,9 +11,10 @@ When you see ANY of the following, call Context7 before answering:
 - Version conflicts, deprecations, or API uncertainty
 - Errors mentioning unknown methods/props/hooks
 Process:
-1) Resolve the library id.
-2) Fetch docs for the detected version and the specific topic.
-3) Cite what you used and apply the exact API.
+1) Check `context7_ids` in `.claude/z-project-config.yml` for a pre-resolved library ID. Use it directly if found.
+2) Only call `resolve-library-id` if no cached ID exists for the library.
+3) Fetch docs for the detected version and the specific topic.
+4) Cite what you used and apply the exact API.
 
 # Verification first
 - IMPORTANT: Always verify your work — run tests, check output, validate behavior. This is the single highest-leverage practice.

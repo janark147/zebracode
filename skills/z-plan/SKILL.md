@@ -15,7 +15,7 @@ required-config:
 
 1. Read `.claude/z-project-config.yml`. If missing → display validation-failed screen and redirect to `/z-project-init`.
 2. Check required config key: `git.target_branch`. If missing → display validation-failed screen and redirect to `/z-project-init`.
-3. Verify Context7 MCP is available: call `mcp__context7__resolve-library-id` with a known library from the project. If unavailable → display validation-failed screen with install hint.
+3. Verify Context7 MCP is available: call `mcp__context7__get-library-docs` with a `context7_ids` value from config (or fall back to `mcp__context7__resolve-library-id` if no IDs cached). If unavailable → display validation-failed screen with install hint.
 4. **Predecessor check**: Verify current branch is NOT the target branch (from config). If on target branch → display blocked screen and redirect to `/z-start {issue}`.
 
 ### Validation-Failed Screen

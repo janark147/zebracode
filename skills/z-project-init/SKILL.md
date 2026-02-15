@@ -56,9 +56,17 @@ Use AskUserQuestion to present auto-detected values as defaults. Let user confir
 6. **Protected files** — defaults shown, user can add project-specific patterns
 7. **Dangerous commands** — defaults shown, user can add
 
-### 3. Create Configuration Files
+### 3. Resolve Context7 Library IDs
 
-1. Write `{project-root}/.claude/z-project-config.yml` from answers
+If Context7 MCP is available, resolve library IDs for detected stack components:
+
+1. For each non-null stack value (`framework`, `frontend`, `css`, `test_runner_backend`, `test_runner_frontend`), call `mcp__context7__resolve-library-id` with the library name.
+2. Store resolved IDs in the `context7_ids` map (use the stack key as the map key, e.g., `framework`, `frontend`, `css`, `test_runner`).
+3. If resolution fails for a library, leave it out — skills will fall back to resolving at runtime.
+
+### 4. Create Configuration Files
+
+1. Write `{project-root}/.claude/z-project-config.yml` from answers (including resolved `context7_ids`)
 2. Create `{project-root}/.claude/plans/` directory
 3. Create `{project-root}/.claude/.local/` directory
 4. Create `{project-root}/.claude/.gitignore` containing `.local/`
@@ -77,7 +85,7 @@ Use AskUserQuestion to present auto-detected values as defaults. Let user confir
 ## Performance Fixes
 ```
 
-### 4. Update CLAUDE.md (if applicable)
+### 5. Update CLAUDE.md (if applicable)
 
 If `{project-root}/CLAUDE.md` exists:
 - Add reference to project conventions discovered by scanning the codebase
