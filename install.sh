@@ -105,14 +105,14 @@ else
     cp "$SETTINGS_FILE" "${SETTINGS_FILE}${BACKUP_SUFFIX}"
     ok "Backup saved to settings.json${BACKUP_SUFFIX}"
 
-    # Extract hooks from example and merge into existing settings
-    # jq's * operator does deep merge — existing non-hook settings are preserved
+    # Extract hooks/env from example and deep-merge into existing settings
+    # jq's * operator does deep merge — user-added hook events and env vars are preserved
     EXAMPLE_HOOKS=$(jq '.hooks // {}' "$EXAMPLE_FILE")
     EXAMPLE_ENV=$(jq '.env // {}' "$EXAMPLE_FILE")
 
     jq --argjson hooks "$EXAMPLE_HOOKS" \
        --argjson env "$EXAMPLE_ENV" \
-       '.hooks = $hooks | .env = (.env // {} | . * $env) | .includeCoAuthoredBy = false' \
+       '.hooks = (.hooks // {} | . * $hooks) | .env = (.env // {} | . * $env) | .includeCoAuthoredBy = false' \
        "$SETTINGS_FILE" > "${SETTINGS_FILE}.tmp" \
        && mv "${SETTINGS_FILE}.tmp" "$SETTINGS_FILE"
 
