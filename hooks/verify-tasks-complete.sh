@@ -51,8 +51,8 @@ done
 
 # Find the currently active phase (last phase with at least one checked item
 # but also at least one unchecked item)
-CHECKED=$(grep -c '\- \[x\]' "$PLAN_FILE" 2>/dev/null || echo 0)
-UNCHECKED=$(grep -c '\- \[ \]' "$PLAN_FILE" 2>/dev/null || echo 0)
+CHECKED=$(grep -c '\- \[x\]' "$PLAN_FILE" 2>/dev/null) || CHECKED=0
+UNCHECKED=$(grep -c '\- \[ \]' "$PLAN_FILE" 2>/dev/null) || UNCHECKED=0
 
 # If nothing is checked or nothing is unchecked, allow stop
 [[ "$CHECKED" -eq 0 ]] && exit 0
