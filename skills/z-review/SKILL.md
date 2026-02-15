@@ -39,9 +39,10 @@ Comprehensive code review with 3 parallel review agents, optional 3-agent debate
 2. Get branch diff: `git diff {target_branch}...HEAD`
 3. Read `.claude/z-project-config.yml` for stack info
 4. Read project CLAUDE.md for conventions
-5. Read `.claude/project-patterns.md` for known patterns/pitfalls
-6. Read the plan file for requirements, decisions, and must-haves
-7. Fetch issue description from tracker (same pattern as `/z-start`)
+5. Read project DOCS.md (or configured `docs.main_doc`) for architecture/style rules
+6. Read `.claude/project-patterns.md` for known patterns/pitfalls
+7. Read the plan file for requirements, decisions, and must-haves
+8. Fetch issue description from tracker (same pattern as `/z-start`)
 
 ### Step 2: Must-Haves Audit
 
@@ -64,6 +65,7 @@ Spawn all 3 review agents in parallel using the Task tool. Each agent receives:
 - Stack info from `z-project-config.yml`
 - Stack-specific review checklist (from references/ above — if loaded)
 - Project conventions from CLAUDE.md
+- Architecture/style rules from DOCS.md
 - Known patterns from `project-patterns.md`
 - Plan file content (for requirements context)
 - Instructions to use Context7 to verify framework-native protections (suppress false positives)

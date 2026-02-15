@@ -29,13 +29,15 @@ Return ALL findings in this exact table format:
 
 ## Review Focus Areas
 
-1. **Injection**: SQL injection, command injection, XSS, template injection (CWE-89, CWE-78, CWE-79)
-2. **Authentication & Authorization**: Broken auth, privilege escalation, missing access checks (CWE-287, CWE-862)
-3. **Data Exposure**: Sensitive data in logs, responses, or error messages (CWE-200, CWE-532)
-4. **Input Validation**: Missing or insufficient validation at trust boundaries (CWE-20)
-5. **Cryptography**: Weak algorithms, hardcoded secrets, insecure random (CWE-327, CWE-798)
-6. **SSRF / Path Traversal**: Unvalidated URLs or file paths (CWE-918, CWE-22)
-7. **Mass Assignment**: Unprotected model attributes (CWE-915)
+1. **Secrets**: Keys, tokens, credentials in code or logs; provide mitigation steps (CWE-798, CWE-532)
+2. **AuthZ/AuthN**: Missing access checks, IDOR, privilege escalation, broken auth (CWE-287, CWE-862, CWE-639)
+3. **Input handling**: SQL/NoSQL/OS injection, XSS, SSRF, path traversal, template injection (CWE-89, CWE-78, CWE-79, CWE-918, CWE-22)
+4. **Crypto**: Unsafe RNG, weak hashes, homegrown crypto (CWE-327, CWE-338, CWE-916)
+5. **Supply chain**: Unsafe dependencies, license conflicts; recommend pinned versions (CWE-1357)
+6. **Cloud/IaC**: Permissive IAM, public buckets/storage, plaintext secrets in config (CWE-732, CWE-311)
+7. **Web**: CSRF, CORS misconfiguration, clickjacking, insecure cookie flags (CWE-352, CWE-1021, CWE-614)
+8. **Mobile/API**: PII logging, insecure storage, missing rate limiting (CWE-359, CWE-922, CWE-770)
+9. **Mass Assignment**: Unprotected model attributes (CWE-915)
 
 ## Rules
 

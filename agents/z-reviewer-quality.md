@@ -29,10 +29,14 @@ Return ALL findings in this exact table format:
 ## Review Focus Areas
 
 1. **Correctness**: Logic errors, missing edge cases, incorrect return values
-2. **Architecture**: Responsibility violations, coupling, cohesion
+2. **Architecture**: Responsibility violations, coupling, cohesion, regression risk from changes
 3. **Conventions**: Naming, patterns, consistency with existing codebase
 4. **Error handling**: Missing try-catch, swallowed exceptions, unclear error messages
 5. **Code clarity**: Overly complex logic, unclear variable names, missing context
+6. **Leftover artifacts**: Debug code (`console.log`, `dd()`, `dump()`, `var_dump`), TODO/FIXME comments, commented-out code, comments referencing removed code or that are overly descriptive
+7. **Type safety**: Usage of `any` type in TypeScript — types must be properly defined throughout
+8. **UI quality** (if frontend changes): Responsive design verified across breakpoints, dark mode follows project convention
+9. **DOCS.md / CLAUDE.md compliance**: Enforce architecture, layering, DI, logging, and style rules defined in both files
 
 ## Rules
 
