@@ -67,25 +67,22 @@ Only modify CLAUDE.md with explicit user approval. Never edit without consent.
 
 ## Completion Screen
 
-```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  ✓ CLAUDE.md Reviewed — {N} improvements applied
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+**━━━ ✓ CLAUDE.md Reviewed ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━**
+**{N} improvements applied**
 
-  Added       {N} conventions to project CLAUDE.md
-  Added       {N} rules to global CLAUDE.md
-  Skipped     {N} suggestions (user declined)
+| | |
+|---|---|
+| **Added** | {N} conventions to project CLAUDE.md |
+| **Added** | {N} rules to global CLAUDE.md |
+| **Skipped** | {N} suggestions *(user declined)* |
 
-─────────────────────────────────────────────────────────────────
-  ▶ Next    /z-start {issue}
-            Begin working on a feature
+───────────────────────────────────────────────────────────────
+**▶ Next** · `/z-start {issue}` — begin working on a feature
 
-            /clear first — fresh context
-─────────────────────────────────────────────────────────────────
+*`/clear` first — fresh context*
 
-  Also available:
-    · /z-groom {issue} — groom before planning
-    · /z-plan {issue}  — plan directly
+**Also available:**
+- `/z-groom {issue}` — groom before planning
+- `/z-plan {issue}` — plan directly
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-```

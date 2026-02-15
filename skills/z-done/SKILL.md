@@ -92,25 +92,25 @@ If the user also wants to merge (old `/merge` behavior):
 
 ### Step 5: Completion Screen
 
-```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  ✓ Feature Complete — {issue-id}: {title}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+**━━━ ✓ Feature Complete ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━**
+**{issue-id}: {title}**
 
-  Pre-flight
-    Tests        {N} passed              ✓
-    Linter       {N} warnings            ✓
-    Types        {N} errors              ✓
-    Clean tree   no uncommitted changes  ✓
-    Up to date   merged with {target}    ✓
+**Pre-flight**
 
-  PR             {url}
-  Memory         updated ✓
-  Temp files     cleaned ✓
+| | | |
+|---|---|---|
+| **Tests** | {N} passed | ✓ |
+| **Linter** | {N} warnings | ✓ |
+| **Types** | {N} errors | ✓ |
+| **Clean tree** | no uncommitted changes | ✓ |
+| **Up to date** | merged with {target} | ✓ |
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  Branch ready for review.
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-```
+| | |
+|---|---|
+| **PR** | {url} |
+| **Memory** | updated ✓ |
+| **Temp files** | cleaned ✓ |
+
+**━━━ Branch ready for review ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━**
 
 This is the terminal skill — no "Next" section. The PR URL is the final deliverable.

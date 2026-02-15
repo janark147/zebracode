@@ -61,44 +61,42 @@ Remove the temp review file when all tests pass.
 ### Step 5: Completion Screen
 
 **All tests passing:**
-```
+
+**━━━ ✓ Tests Passing ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━**
+**{backend/frontend}**
+
+| | |
+|---|---|
+| **Total** | {N} tests |
+| **Passed** | {N} |
+| **Failed** | 0 |
+| **Skipped** | {N} |
+| **Time** | {time}s |
+
+───────────────────────────────────────────────────────────────
+**▶ Next** · `/z-done` — quality gates, push, and create PR
+
+*`/clear` first — fresh context*
+
+**Also available:**
+- `/z-review` — multi-agent code review
+
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  ✓ Tests Passing — {backend|frontend}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-  Total     {N} tests
-  Passed    {N}
-  Failed    0
-  Skipped   {N}
-  Time      {time}s
-
-─────────────────────────────────────────────────────────────────
-  ▶ Next    /z-done
-            Quality gates, push, and create PR
-
-            /clear first — fresh context
-─────────────────────────────────────────────────────────────────
-
-  Also available:
-    · /z-review — multi-agent code review
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-```
 
 **Some tests still failing:**
-```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  ✗ Tests Failing — {backend|frontend}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-  Total     {N} tests
-  Passed    {N}
-  Failed    {N}
-  Time      {time}s
-  Auto-fix  attempted {N} failures, {M} remain
+**━━━ ✗ Tests Failing ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━**
+**{backend/frontend}**
 
-─────────────────────────────────────────────────────────────────
-  ▶ Next    Fix failures manually, then re-run /z-test
-─────────────────────────────────────────────────────────────────
+| | |
+|---|---|
+| **Total** | {N} tests |
+| **Passed** | {N} |
+| **Failed** | {N} |
+| **Time** | {time}s |
+| **Auto-fix** | attempted {N} failures, {M} remain |
+
+───────────────────────────────────────────────────────────────
+**▶ Next** · Fix failures manually, then re-run `/z-test`
+
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-```

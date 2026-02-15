@@ -41,25 +41,22 @@ Designed for small bug fixes, trivial features, and config changes. Skips planni
 
 ## Completion Screen
 
-```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  ✓ Quick Task Complete — {issue-id}: {title}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+**━━━ ✓ Quick Task Complete ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━**
+**{issue-id}: {title}**
 
-  Commits     {N}
-  Tests       {N} passing
-  Linter      {N} warnings
+| | |
+|---|---|
+| **Commits** | {N} |
+| **Tests** | {N} passing |
+| **Linter** | {N} warnings |
 
-─────────────────────────────────────────────────────────────────
-  ▶ Next    /z-done
-            Push and create PR
+───────────────────────────────────────────────────────────────
+**▶ Next** · `/z-done` — push and create PR
 
-            /clear first — fresh context
-─────────────────────────────────────────────────────────────────
+*`/clear` first — fresh context*
 
-  Also available:
-    · /z-review {issue}  — review before pushing
-    · /z-test            — run full test suite
+**Also available:**
+- `/z-review {issue}` — review before pushing
+- `/z-test` — run full test suite
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-```

@@ -162,69 +162,66 @@ Apply the most likely fix:
 ### Step 7: Completion Screens
 
 **Success:**
-```
+
+**━━━ ✓ Bug Fixed ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━**
+**{issue-id}**
+
+| | |
+|---|---|
+| **Root cause** | {one-line description} |
+| **Evidence** | {file:line} |
+| **Fix** | {one-line description of fix} |
+| **Hypotheses** | {N} investigated, #{winner} confirmed |
+| **Tests** | {N} passing ✓ |
+
+───────────────────────────────────────────────────────────────
+**▶ Next** · `/z-done` — push fix and create PR
+
+*`/clear` first — fresh context*
+
+**Also available:**
+- `/z-test` — run full test suite
+- `/z-review {issue}` — review the fix
+
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  ✓ Bug Fixed — {issue-id}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-  Root cause     {one-line description}
-  Evidence       {file:line}
-  Fix            {one-line description of fix}
-  Hypotheses     {N} investigated, #{winner} confirmed
-  Tests          {N} passing ✓
-
-─────────────────────────────────────────────────────────────────
-  ▶ Next    /z-done
-            Push fix and create PR
-
-            /clear first — fresh context
-─────────────────────────────────────────────────────────────────
-
-  Also available:
-    · /z-test             — run full test suite
-    · /z-review {issue}   — review the fix
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-```
 
 **Fix failed (more hypotheses remain):**
-```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  ✗ Fix Attempt Failed — hypothesis #{N}: {name}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-  Attempted      {hypothesis description}
-  Result         {what went wrong}
-  Changes        rolled back ✓
-  Remaining      {N} untried hypotheses
+**━━━ ✗ Fix Attempt Failed ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━**
+**hypothesis #{N}: {name}**
 
-─────────────────────────────────────────────────────────────────
-  ▶ Next    /z-debug resume
-            Try next hypothesis: {next hypothesis name}
+| | |
+|---|---|
+| **Attempted** | {hypothesis description} |
+| **Result** | {what went wrong} |
+| **Changes** | rolled back ✓ |
+| **Remaining** | {N} untried hypotheses |
 
-            /clear first — fresh context
-─────────────────────────────────────────────────────────────────
+───────────────────────────────────────────────────────────────
+**▶ Next** · `/z-debug resume` — try next hypothesis: {next hypothesis name}
+
+*`/clear` first — fresh context*
+
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-```
 
 **All hypotheses exhausted:**
-```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  ✗ Investigation Exhausted — {issue-id}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-  Hypotheses tested  {N}/{N}
-  All failed         Changes rolled back ✓
+**━━━ ✗ Investigation Exhausted ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━**
+**{issue-id}**
 
-  Top hypothesis     #{N}: {name} ({confidence}%)
-  Evidence           {file:line summary}
+| | |
+|---|---|
+| **Hypotheses tested** | {N}/{N} |
+| **All failed** | Changes rolled back ✓ |
+| **Top hypothesis** | #{N}: {name} ({confidence}%) |
+| **Evidence** | {file:line summary} |
 
-─────────────────────────────────────────────────────────────────
-  ▶ Next    Provide additional context or try a different angle
-            Consider: /z-pause to save findings for manual review
-─────────────────────────────────────────────────────────────────
+───────────────────────────────────────────────────────────────
+**▶ Next** · Provide additional context or try a different angle
+
+*Consider: `/z-pause` to save findings for manual review*
+
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-```
 
 ---
 

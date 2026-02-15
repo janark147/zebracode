@@ -55,25 +55,22 @@ If any new conventions, rules, or discoveries were made during the work:
 
 ### Step 4: Completion Screen
 
-```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  ✓ Docs Updated — {doc file}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+**━━━ ✓ Docs Updated ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━**
+**{doc file}**
 
-  Sections added     {N}
-  Sections updated   {N}
-  Sections removed   {N}
-  CLAUDE.md updated  {yes/no}
+| | |
+|---|---|
+| **Sections added** | {N} |
+| **Sections updated** | {N} |
+| **Sections removed** | {N} |
+| **CLAUDE.md updated** | {yes/no} |
 
-─────────────────────────────────────────────────────────────────
-  ▶ Next    /z-done
-            Quality gates, push, and create PR
+───────────────────────────────────────────────────────────────
+**▶ Next** · `/z-done` — quality gates, push, and create PR
 
-            /clear first — fresh context
-─────────────────────────────────────────────────────────────────
+*`/clear` first — fresh context*
 
-  Also available:
-    · /z-docs-optimise {file} — optimize the doc further
+**Also available:**
+- `/z-docs-optimise {file}` — optimize the doc further
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-```

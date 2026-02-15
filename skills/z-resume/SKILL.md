@@ -43,28 +43,25 @@ Suggest the next command: `/z-work {issue} {phase}`
 
 ## Completion Screen
 
-```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  ✓ Context Restored — {branch-name}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+**━━━ ✓ Context Restored ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━**
+**{branch-name}**
 
-  Paused at      {date}
-  Current phase  Phase {N}: {name}
-  Status         {current status from session file}
+| | |
+|---|---|
+| **Paused at** | {date} |
+| **Current phase** | Phase {N}: {name} |
+| **Status** | {current status from session file} |
 
-  ⚠ Notes from last session:
-  {key findings, hypotheses, or gotchas — 1-3 lines}
+> **Notes from last session:**
+> {key findings, hypotheses, or gotchas — 1-3 lines}
 
-─────────────────────────────────────────────────────────────────
-  ▶ Next    /z-work {issue} {phase}
-            Continue Phase {N}
+───────────────────────────────────────────────────────────────
+**▶ Next** · `/z-work {issue} {phase}` — continue Phase {N}
 
-            /clear first — fresh context
-─────────────────────────────────────────────────────────────────
+*`/clear` first — fresh context*
 
-  Also available:
-    · /z-verify {issue} {N-1}  — verify previous phase first
-    · /z-review                — skip to review
+**Also available:**
+- `/z-verify {issue} {N-1}` — verify previous phase first
+- `/z-review` — skip to review
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-```

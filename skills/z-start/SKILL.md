@@ -44,28 +44,25 @@ required-config:
 
 ## Completion Screen
 
-```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  ✓ Ready to Work — {issue-id}: {issue title}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+**━━━ ✓ Ready to Work ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━**
+**{issue-id}: {issue title}**
 
-  Branch     {branch-name}
-  Issue      {issue-id} — {title}
-  Tracker    {tracker type}
-  Migrated   ✓
-  Cache      cleared ✓
+| | |
+|---|---|
+| **Branch** | {branch-name} |
+| **Issue** | {issue-id} — {title} |
+| **Tracker** | {tracker type} |
+| **Migrated** | ✓ |
+| **Cache** | cleared ✓ |
 
-─────────────────────────────────────────────────────────────────
-  ▶ Next    /z-plan {issue}
-            Create an implementation plan
+───────────────────────────────────────────────────────────────
+**▶ Next** · `/z-plan {issue}` — create an implementation plan
 
-            /clear first — fresh context
-─────────────────────────────────────────────────────────────────
+*`/clear` first — fresh context*
 
-  Also available:
-    · /z-groom {issue} — groom before planning
-    · /z-quick {issue} — small task, skip planning
-    · /z-debug {issue} — bug investigation workflow
+**Also available:**
+- `/z-groom {issue}` — groom before planning
+- `/z-quick {issue}` — small task, skip planning
+- `/z-debug {issue}` — bug investigation workflow
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-```

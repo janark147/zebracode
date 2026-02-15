@@ -95,24 +95,21 @@ If issues were deferred:
 
 ### Step 6: Completion Screen
 
-```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  ✓ Phase {N} Verified — {pass}/{total} criteria passed
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+**━━━ ✓ Phase {N} Verified ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━**
+**{pass}/{total} criteria passed**
 
-  Must-haves     {N}/{N} ✓
-  Criteria       {pass}/{total} passed
-  Deferred       {N} issues → Fix Issues phase
+| | |
+|---|---|
+| **Must-haves** | {N}/{N} ✓ |
+| **Criteria** | {pass}/{total} passed |
+| **Deferred** | {N} issues → Fix Issues phase |
 
-─────────────────────────────────────────────────────────────────
-  ▶ Next    /z-work {issue} {next-phase}
-            Continue to Phase {next}: {phase name}
+───────────────────────────────────────────────────────────────
+**▶ Next** · `/z-work {issue} {next-phase}` — continue to Phase {next}: {phase name}
 
-            /clear first — fresh context
-─────────────────────────────────────────────────────────────────
+*`/clear` first — fresh context*
 
-  Also available:
-    · /z-pause — save and stop
+**Also available:**
+- `/z-pause` — save and stop
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-```

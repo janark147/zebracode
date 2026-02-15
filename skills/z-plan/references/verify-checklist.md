@@ -107,26 +107,23 @@ Use **AskUserQuestion** for each issue — the user can:
 
 ## Step 6: Completion Screen
 
-```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  ✓ Plan Verified — {pass}/{total} checks passed
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+**━━━ ✓ Plan Verified ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━**
+**{pass}/{total} checks passed**
 
-  Checks passed    {N}
-  Issues found     {N}
-  Accepted         {N} (added to plan as amendments)
-  Dismissed        {N} (moved to Disregarded Issues)
+| | |
+|---|---|
+| **Checks passed** | {N} |
+| **Issues found** | {N} |
+| **Accepted** | {N} *(added to plan as amendments)* |
+| **Dismissed** | {N} *(moved to Disregarded Issues)* |
 
-─────────────────────────────────────────────────────────────────
-  ▶ Next    /z-work {issue} 1
-            Begin Phase 1 implementation
+───────────────────────────────────────────────────────────────
+**▶ Next** · `/z-work {issue} 1` — begin Phase 1 implementation
 
-            /clear first — fresh context
-─────────────────────────────────────────────────────────────────
+*`/clear` first — fresh context*
 
-  Also available:
-    · /z-work {issue} 0 — start with design phase (if Phase 0 exists)
-    · /z-plan {issue}   — revise the plan
+**Also available:**
+- `/z-work {issue} 0` — start with design phase (if Phase 0 exists)
+- `/z-plan {issue}` — revise the plan
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-```

@@ -100,24 +100,21 @@ After the user selects a mockup, update the plan file's `## Design Decisions` se
 
 ### Step 6: Completion Screen
 
-```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  ✓ Design Selected — Mockup {N}: {name/description}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+**━━━ ✓ Design Selected ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━**
+**Mockup {N}: {name/description}**
 
-  Mockups presented  {N}
-  Selected           Mockup {N}
-  Documented in      .claude/plans/{issue}-{feature}.md ✓
+| | |
+|---|---|
+| **Mockups presented** | {N} |
+| **Selected** | Mockup {N} |
+| **Documented in** | `.claude/plans/{issue}-{feature}.md` ✓ |
 
-─────────────────────────────────────────────────────────────────
-  ▶ Next    /z-work {issue} 1
-            Begin implementation with selected design
+───────────────────────────────────────────────────────────────
+**▶ Next** · `/z-work {issue} 1` — begin implementation with selected design
 
-            /clear first — fresh context
-─────────────────────────────────────────────────────────────────
+*`/clear` first — fresh context*
 
-  Also available:
-    · /z-plan {issue} --verify — verify plan first
+**Also available:**
+- `/z-plan {issue} --verify` — verify plan first
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-```

@@ -83,21 +83,20 @@ For each approved action:
 
 ### Step 8: Completion Screen
 
-```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  ✓ Retrospective Complete — {N} themes found
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+**━━━ ✓ Retrospective Complete ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━**
+**{N} themes found**
 
-  Artifacts scanned  {N} plan files, {N} commits, {N} debug files
-  Themes found       {N}
-  Actions taken      {N} CLAUDE.md updates, {N} patterns recorded
-  Deferred           {N}
+| | |
+|---|---|
+| **Artifacts scanned** | {N} plan files, {N} commits, {N} debug files |
+| **Themes found** | {N} |
+| **Actions taken** | {N} CLAUDE.md updates, {N} patterns recorded |
+| **Deferred** | {N} |
 
-─────────────────────────────────────────────────────────────────
-  ▶ Next    Continue with your current workflow
-─────────────────────────────────────────────────────────────────
+───────────────────────────────────────────────────────────────
+**▶ Next** · Continue with your current workflow
+
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-```
 
 ---
 

@@ -125,26 +125,23 @@ If confirmed:
 
 ### Step 8: Completion Screen
 
-```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  ✓ Grooming Complete — {issue-id}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+**━━━ ✓ Grooming Complete ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━**
+**{issue-id}**
 
-  Areas covered     {N}/{total}
-  Decisions made    {N}
-  Open questions    {N}
-  Edge cases found  {N}
-  Posted to         {tracker} ✓
+| | |
+|---|---|
+| **Areas covered** | {N}/{total} |
+| **Decisions made** | {N} |
+| **Open questions** | {N} |
+| **Edge cases found** | {N} |
+| **Posted to** | {tracker} ✓ |
 
-─────────────────────────────────────────────────────────────────
-  ▶ Next    /z-plan {issue}
-            Create implementation plan from grooming
+───────────────────────────────────────────────────────────────
+**▶ Next** · `/z-plan {issue}` — create implementation plan from grooming
 
-            /clear first — fresh context
-─────────────────────────────────────────────────────────────────
+*`/clear` first — fresh context*
 
-  Also available:
-    · /z-plan {issue} --design — force a design phase into the plan
+**Also available:**
+- `/z-plan {issue} --design` — force a design phase into the plan
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-```

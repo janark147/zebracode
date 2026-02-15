@@ -22,8 +22,6 @@ If no commit message is provided by the user, create a **SHORT AND TO THE POINT*
 
 After committing, display:
 
-```
-─────────────────────────────────────────────────────────────────
-  ✓ Committed  {short-hash}  {message}
-─────────────────────────────────────────────────────────────────
-```
+**━━━ ✓ Committed ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━**
+`{short-hash}` **{message}**
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

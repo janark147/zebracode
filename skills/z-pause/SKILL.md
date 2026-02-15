@@ -67,21 +67,19 @@ Create `.claude/.local/` if it doesn't exist. Ensure `.claude/.gitignore` contai
 
 ## Completion Screen
 
-```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  ◆ Session Paused — {branch-name}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+**━━━ ◆ Session Paused ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━**
+**{branch-name}**
 
-  Current phase    Phase {N}: {name}
-  WIP committed    {yes/no}
-  Session file     .claude/.local/{branch}-session.md ✓
-  Plan updated     ✓
+| | |
+|---|---|
+| **Current phase** | Phase {N}: {name} |
+| **WIP committed** | {yes/no} |
+| **Session file** | `.claude/.local/{branch}-session.md` ✓ |
+| **Plan updated** | ✓ |
 
-─────────────────────────────────────────────────────────────────
-  ▶ Resume  /z-resume
-            Restores full context from session file
+───────────────────────────────────────────────────────────────
+**▶ Resume** · `/z-resume` — restores full context from session file
 
-            /clear first — fresh context
-─────────────────────────────────────────────────────────────────
+*`/clear` first — fresh context*
+
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-```

@@ -145,28 +145,24 @@ For each phase that has review findings, append summary lines to that phase's `#
 
 ### Step 9: Completion Screen
 
-```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  ✓ Review Complete — {N} issues, {M} to fix
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+**━━━ ✓ Review Complete ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━**
+**{N} issues, {M} to fix**
 
-  Must-haves       {verified}/{total}
-  Issues found     {N} (Q:{n} S:{n} P:{n})
-  To fix           {M} (added to Fix Issues phase)
-  Dismissed        {D}
+| | |
+|---|---|
+| **Must-haves** | {verified}/{total} |
+| **Issues found** | {N} (Q:{n} S:{n} P:{n}) |
+| **To fix** | {M} *(added to Fix Issues phase)* |
+| **Dismissed** | {D} |
 
-  │ Severity breakdown:
-  │ Critical {n}  High {n}  Medium {n}  Low {n}
+> **Severity:** Critical {n} · High {n} · Medium {n} · Low {n}
 
-─────────────────────────────────────────────────────────────────
-  ▶ Next    /z-work {issue} --fix
-            Address {M} review findings
+───────────────────────────────────────────────────────────────
+**▶ Next** · `/z-work {issue} --fix` — address {M} review findings
 
-            /clear first — fresh context
-─────────────────────────────────────────────────────────────────
+*`/clear` first — fresh context*
 
-  Also available:
-    · /z-pause         — save and stop
+**Also available:**
+- `/z-pause` — save and stop
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-```

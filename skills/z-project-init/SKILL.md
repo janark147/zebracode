@@ -88,27 +88,24 @@ If it doesn't exist: create a minimal one with stack info and convention pointer
 
 ## Completion Screen
 
-```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  ✓ Project Initialized — {project name}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+**━━━ ✓ Project Initialized ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━**
+**{project name}**
 
-  Stack      {language} / {framework} / {frontend}
-  Tracker    {type} ({project key})
-  Config     .claude/z-project-config.yml   ✓
-  Plans dir  .claude/plans/                ✓
-  Gitignore  .claude/.gitignore            ✓
+| | |
+|---|---|
+| **Stack** | {language} / {framework} / {frontend} |
+| **Tracker** | {type} ({project key}) |
+| **Config** | `.claude/z-project-config.yml` ✓ |
+| **Plans dir** | `.claude/plans/` ✓ |
+| **Gitignore** | `.claude/.gitignore` ✓ |
 
-─────────────────────────────────────────────────────────────────
-  ▶ Next    /z-claudemd-review
-            Audit and improve project CLAUDE.md
+───────────────────────────────────────────────────────────────
+**▶ Next** · `/z-claudemd-review` — audit and improve project CLAUDE.md
 
-            /clear first — fresh context
-─────────────────────────────────────────────────────────────────
+*`/clear` first — fresh context*
 
-  Also available:
-    · /z-start {issue} — jump straight into a feature
-    · /z-groom {issue} — groom an issue first
+**Also available:**
+- `/z-start {issue}` — jump straight into a feature
+- `/z-groom {issue}` — groom an issue first
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-```

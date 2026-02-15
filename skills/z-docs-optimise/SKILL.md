@@ -199,18 +199,17 @@ Every change must satisfy ALL criteria:
 
 ## Completion Screen
 
-```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  ✓ Docs Optimized — {file}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+**━━━ ✓ Docs Optimized ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━**
+**{file}**
 
-  Before    {word count} words, {section count} sections
-  After     {word count} words, {section count} sections
-  Reduced   {percent}% smaller
-  Compared  original vs optimized ✓ (no context lost)
+| | |
+|---|---|
+| **Before** | {word count} words, {section count} sections |
+| **After** | {word count} words, {section count} sections |
+| **Reduced** | {percent}% smaller |
+| **Compared** | original vs optimized ✓ *(no context lost)* |
 
-─────────────────────────────────────────────────────────────────
-  ▶ Next    Continue with your current workflow
-─────────────────────────────────────────────────────────────────
+───────────────────────────────────────────────────────────────
+**▶ Next** · Continue with your current workflow
+
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-```

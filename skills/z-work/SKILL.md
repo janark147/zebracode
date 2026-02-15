@@ -151,66 +151,42 @@ If nothing surfaces → proceed silently.
 
 ### Step 9: Phase Summary & Completion Screen
 
-Display evidence-based progress:
+Display evidence-based progress, then the completion screen:
 
-```
-## Phase {N} Complete
-- Commits: {N} ("{message1}", "{message2}")
-- Tests: {pass} passing, {fail} failing
-- Linter: {N} warnings
-- Type errors: {N}
-- Must-haves: {verified}/{total} verified
-  - ✓ Truths: {N}/{N}
-  - ✓ Artifacts: {N}/{N}
-  - ✓ Links: {N}/{N}
+**━━━ ✓ Phase {N} Complete ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━**
+**{phase name}**
 
-## Overall Progress
-- Phases completed: {list} ✓
-- Phases remaining: {list}
-```
+| | |
+|---|---|
+| **Commits** | {N} ({message1}, {message2}) |
+| **Tests** | {pass} passing, {fail} failing |
+| **Linter** | {N} warnings |
+| **Type errors** | {N} |
+| **Must-haves** | {verified}/{total} verified |
 
-Then display completion screen:
+> **Must-haves:** Truths {N}/{N} ✓ · Artifacts {N}/{N} ✓ · Links {N}/{N} ✓
 
-```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  ✓ Phase {N} Complete — {phase name}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+**Progress** ██████████░░░░░░░░ {done}/{total} phases
+{completed list} ✓ │ {remaining list}
 
-  Commits      {N} ({message1}, {message2})
-  Tests        {pass} passing, {fail} failing
-  Linter       {N} warnings
-  Type errors  {N}
-  Must-haves   {verified}/{total} verified
-    Truths     {N}/{N}  ✓
-    Artifacts  {N}/{N}  ✓
-    Links      {N}/{N}  ✓
+───────────────────────────────────────────────────────────────
+**▶ Next** · `/z-work {issue} {next-phase}` — continue to Phase {next}: {phase name}
 
-  Progress     ██████████░░░░░░░░  {done}/{total} phases
-               {completed list} ✓ │ {remaining list}
+*`/clear` first — fresh context*
 
-─────────────────────────────────────────────────────────────────
-  ▶ Next    /z-work {issue} {next-phase}
-            Continue to Phase {next}: {phase name}
-
-            /clear first — fresh context
-─────────────────────────────────────────────────────────────────
-
-  Also available:
-    · /z-verify {issue} {N}  — verify this phase with user
-    · /z-pause               — save progress and stop
-    · /z-review              — skip ahead to review
+**Also available:**
+- `/z-verify {issue} {N}` — verify this phase with user
+- `/z-pause` — save progress and stop
+- `/z-review` — skip ahead to review
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-```
 
 **When the last implementation phase is complete** (before Fix Issues), change the Next suggestion:
-```
-  ▶ Next    /z-review {issue}
-            Multi-agent code review before fixing issues
 
-  Also available:
-    · /z-pause          — save progress and stop
-```
+**▶ Next** · `/z-review {issue}` — multi-agent code review before fixing issues
+
+**Also available:**
+- `/z-pause` — save progress and stop
 
 ---
 

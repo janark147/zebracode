@@ -237,30 +237,27 @@ After writing the plan, before displaying completion:
 
 Count the plan metrics and display:
 
-```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  ✓ Plan Created — {issue-id}: {feature title}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+**━━━ ✓ Plan Created ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━**
+**{issue-id}: {feature title}**
 
-  Plan file    .claude/plans/{issue}-{feature}.md
-  Phases       {N} implementation + Fix Issues + Documentation
-  Design       {Yes (Phase 0) | No}
-  Steps        {total action points across all phases}
-  Must-haves   {total truths + artifacts + links}
+| | |
+|---|---|
+| **Plan file** | `.claude/plans/{issue}-{feature}.md` |
+| **Phases** | {N} implementation + Fix Issues + Documentation |
+| **Design** | {Yes (Phase 0) / No} |
+| **Steps** | {total action points across all phases} |
+| **Must-haves** | {total truths + artifacts + links} |
 
-─────────────────────────────────────────────────────────────────
-  ▶ Next    /z-plan {issue} --verify
-            Validate plan with multi-agent review
+───────────────────────────────────────────────────────────────
+**▶ Next** · `/z-plan {issue} --verify` — validate plan with multi-agent review
 
-            /clear first — fresh context
-─────────────────────────────────────────────────────────────────
+*`/clear` first — fresh context*
 
-  Also available:
-    · /z-work {issue} 0  — start with design phase (if Phase 0 exists)
-    · /z-work {issue} 1  — skip verification, start building
+**Also available:**
+- `/z-work {issue} 0` — start with design phase (if Phase 0 exists)
+- `/z-work {issue} 1` — skip verification, start building
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-```
 
 If a Design phase was included, mention it in the completion screen and suggest `/z-work {issue} 0` as the first step.
 
