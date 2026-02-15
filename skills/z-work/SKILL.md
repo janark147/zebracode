@@ -170,9 +170,10 @@ Display evidence-based progress, then the completion screen:
 {completed list} ✓ │ {remaining list}
 
 ───────────────────────────────────────────────────────────────
-**▶ Next** · `/z-work {issue} {next-phase}` — continue to Phase {next}: {phase name}
+**▶ Next** · `/commit` — commit phase changes
+         · Then → `/z-work {issue} {next-phase}` — continue to Phase {next}: {phase name}
 
-*`/clear` first — fresh context*
+*`/clear` before the next phase — fresh context*
 
 **Also available:**
 - `/z-verify {issue} {N}` — verify this phase with user
@@ -183,7 +184,8 @@ Display evidence-based progress, then the completion screen:
 
 **When the last implementation phase is complete** (before Fix Issues), change the Next suggestion:
 
-**▶ Next** · `/z-review {issue}` — multi-agent code review before fixing issues
+**▶ Next** · `/commit` — commit phase changes
+         · Then → `/z-review {issue}` — multi-agent code review before fixing issues
 
 **Also available:**
 - `/z-pause` — save progress and stop
@@ -198,7 +200,7 @@ When `--fix` is passed, execute the "Fix Issues" phase from the plan:
 2. Work through each item step by step (same loop as Step 3)
 3. Each fix gets its own commit
 4. Run full test suite after all fixes
-5. Display completion screen with Next → `/z-done` or `/z-work {issue} --docs`
+5. Display completion screen with Next → `/commit`, then `/z-done` or `/z-work {issue} --docs`
 
 ## Terminal Phase: --docs (Documentation)
 
@@ -206,4 +208,4 @@ When `--docs` is passed, delegate to `/z-docs-update` skill logic:
 
 1. Analyze all changes made across all phases
 2. Update project documentation accordingly
-3. Display completion screen with Next → `/z-done`
+3. Display completion screen with Next → `/commit`, then `/z-done`
