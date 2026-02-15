@@ -28,6 +28,8 @@ On-demand utility for running the full test suite and fixing failures. Separate 
 
 ## Execution
 
+Use AskUserQuestion when uncertain about any decision.
+
 ### Step 1: Run Full Test Suite
 
 Run the test command from config. **ALL tests must pass — not just feature-related ones. DO NOT SKIP ANY TESTS.**

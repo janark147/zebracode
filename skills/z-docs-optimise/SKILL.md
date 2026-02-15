@@ -174,6 +174,8 @@ Before removing ANY content:
 
 ## Execution Instructions
 
+Use AskUserQuestion when uncertain about any decision.
+
 1. **Read** the document specified: `$ARGUMENTS`
 2. **Snapshot** the original (word count, section count) for comparison
 3. **Analyze** each section using the methodology above

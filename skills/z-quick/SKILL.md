@@ -26,6 +26,7 @@ Designed for small bug fixes, trivial features, and config changes. Skips planni
 - Single phase, no plan file
 - Follow conventions from CLAUDE.md
 - Use Context7 and MCP servers as needed
+- Use AskUserQuestion when uncertain about any decision.
 - If the task turns out to be complex mid-implementation: suggest switching to the full workflow (`/z-plan`)
 
 ### 3. Verify
