@@ -20,7 +20,8 @@ Comprehensive code review with 3 parallel review agents, optional 3-agent debate
 1. Read `.claude/z-project-config.yml`. If missing → redirect to `/z-project-init`.
 2. Check required config keys: `git.target_branch`, `stack.language`, `stack.framework`. If missing → redirect to `/z-project-init`.
 3. Verify Context7 MCP is available: call `mcp__context7__get-library-docs` with a `context7_ids` value from config (or fall back to `mcp__context7__resolve-library-id` if no IDs cached). If unavailable → display validation-failed screen.
-4. **Predecessor check**: Check that `git diff` against target branch is non-empty. If empty → redirect to `/z-work`.
+4. **Clean working tree check**: Run `git status --porcelain`. If output is non-empty → STOP and ask via AskUserQuestion: "Working tree has uncommitted changes. Did you forget to `/commit`?" Do not proceed until the tree is clean.
+5. **Predecessor check**: Check that `git diff` against target branch is non-empty. If empty → redirect to `/z-work`.
 
 ---
 
