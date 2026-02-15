@@ -2,6 +2,19 @@
 
 A structured workflow framework for [Claude Code](https://docs.anthropic.com/en/docs/claude-code). Brings opinionated, repeatable workflows to AI-assisted software development — with plans, phases, multi-agent reviews, session persistence, and automated quality gates.
 
+### What makes it different
+
+| Principle | What it means |
+|-----------|---------------|
+| **Evidence-based verification** | Every skill that claims progress must show concrete proof — test counts, linter output, `file:line` citations. No bare checkmarks, no "it works." |
+| **Least-privileged tool access** | Review and debug agents get read-only tools (Read, Grep, Glob). Only the main session modifies code. Agents can't accidentally break things. |
+| **Workflow state validation** | Hooks enforce prerequisites: stop blocked if plan has unchecked items, protected files can't be edited, destructive commands are rejected. |
+| **Decision enforcement** | Grooming decisions are categorized as Locked, Deferred, or Discretion. Locked decisions map to plan actions. Deferred items are never implemented unless re-categorized. |
+| **Persistent project patterns** | Conventions, pitfalls, and shortcuts discovered during work are recorded in `.claude/project-patterns.md` (with user approval) and retained across sessions and branches. |
+| **Full audit trail** | Plan files contain per-phase Work Logs — append-only entries with commit hashes, skill references, and `file:line` citations that survive `/clear` and context compaction. |
+| **Automated self-reflection** | Before claiming a phase complete, the agent silently evaluates: Did I verify behavior or just confirm code exists? Did I deviate from the plan? Would I flag this in review? |
+| **Optimized CLAUDE.md** | Global instructions enforce verification-first development, debugging discipline, security boundaries, and context management — reviewed and tuned via `/z-claudemd-review`. |
+
 ## Table of Contents
 
 - [Prerequisites](#prerequisites)
@@ -24,6 +37,7 @@ A structured workflow framework for [Claude Code](https://docs.anthropic.com/en/
 |------|---------|
 | [Claude Code](https://docs.anthropic.com/en/docs/claude-code) | CLI agent (ZebraCode is a framework on top of it) |
 | `jq` | JSON parsing in hook scripts (`brew install jq`) |
+| `terminal-notifier` | Desktop notifications on macOS (`brew install terminal-notifier`) |
 
 ### Recommended MCPs
 
