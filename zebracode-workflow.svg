@@ -1,0 +1,317 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1280" font-family="'Segoe UI', system-ui, -apple-system, sans-serif" font-size="13">
+  <rect width="800" height="1280" fill="#fff"/>
+
+  <!-- Title -->
+  <text x="400" y="36" text-anchor="middle" font-size="22" font-weight="700" fill="#0f172a" letter-spacing="-0.5">ZebraCode v1.4</text>
+  <text x="400" y="56" text-anchor="middle" font-size="12" fill="#94a3b8">Standard Feature Workflow · each step separated by <tspan font-family="ui-monospace, monospace" fill="#64748b">/clear</tspan></text>
+
+  <!-- Defs -->
+  <defs>
+    <marker id="arr" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto-start-auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#cbd5e1"/>
+    </marker>
+    <marker id="arr-red" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto-start-auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#ef4444"/>
+    </marker>
+    <marker id="arr-purple" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto-start-auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#8b5cf6"/>
+    </marker>
+    <marker id="arr-gray" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto-start-auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#64748b"/>
+    </marker>
+  </defs>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- STEP 1: z-start                            -->
+  <!-- ═══════════════════════════════════════════ -->
+  <g transform="translate(0, 80)">
+    <circle cx="100" cy="22" r="14" fill="#10b981"/>
+    <text x="100" y="27" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">1</text>
+    <line x1="114" y1="22" x2="148" y2="22" stroke="#10b981" stroke-width="1.5"/>
+    <rect x="150" y="0" width="490" height="44" rx="8" fill="#f0fdf4" stroke="#10b981" stroke-width="1.5"/>
+    <text x="168" y="20" font-size="14" font-weight="700" fill="#10b981" font-family="ui-monospace, monospace">/z-start</text>
+    <text x="280" y="20" font-size="12" fill="#475569">Checkout branch, load issue context</text>
+    <text x="168" y="36" font-size="11" fill="#94a3b8">Reads issue → prepares source tree → no model invocations</text>
+  </g>
+
+  <!-- /clear -->
+  <g transform="translate(0, 140)">
+    <line x1="150" y1="0" x2="300" y2="0" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="3,3"/>
+    <text x="316" y="4" font-size="10" font-family="ui-monospace, monospace" fill="#cbd5e1">/clear</text>
+    <line x1="356" y1="0" x2="500" y2="0" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="3,3"/>
+  </g>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- STEP 2: z-groom (optional)                 -->
+  <!-- ═══════════════════════════════════════════ -->
+  <g transform="translate(0, 158)">
+    <circle cx="100" cy="22" r="14" fill="#fff" stroke="#f59e0b" stroke-width="2" stroke-dasharray="4,3"/>
+    <text x="100" y="27" text-anchor="middle" font-size="12" font-weight="700" fill="#f59e0b">2</text>
+    <line x1="114" y1="22" x2="148" y2="22" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="4,3"/>
+    <rect x="150" y="0" width="490" height="44" rx="8" fill="#fffbeb" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="5,4"/>
+    <text x="168" y="20" font-size="14" font-weight="700" fill="#f59e0b" font-family="ui-monospace, monospace">/z-groom</text>
+    <text x="286" y="20" font-size="12" fill="#475569">Interactive grooming session</text>
+    <rect x="476" y="8" width="60" height="20" rx="10" fill="#fef3c7"/>
+    <text x="506" y="22" text-anchor="middle" font-size="10" font-weight="600" fill="#d97706">optional</text>
+    <text x="168" y="36" font-size="11" fill="#94a3b8">Decisions tagged: Locked · Deferred · Discretion</text>
+  </g>
+
+  <!-- /clear -->
+  <g transform="translate(0, 218)">
+    <line x1="150" y1="0" x2="300" y2="0" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="3,3"/>
+    <text x="316" y="4" font-size="10" font-family="ui-monospace, monospace" fill="#cbd5e1">/clear</text>
+    <line x1="356" y1="0" x2="500" y2="0" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="3,3"/>
+  </g>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- STEP 3: z-plan                              -->
+  <!-- ═══════════════════════════════════════════ -->
+  <g transform="translate(0, 236)">
+    <circle cx="100" cy="22" r="14" fill="#3b82f6"/>
+    <text x="100" y="27" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">3</text>
+    <line x1="114" y1="22" x2="148" y2="22" stroke="#3b82f6" stroke-width="1.5"/>
+    <rect x="150" y="0" width="490" height="44" rx="8" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5"/>
+    <text x="168" y="20" font-size="14" font-weight="700" fill="#3b82f6" font-family="ui-monospace, monospace">/z-plan</text>
+    <text x="268" y="20" font-size="12" fill="#475569">Create phased implementation plan</text>
+    <text x="168" y="36" font-size="11" fill="#94a3b8">Flags: <tspan font-family="ui-monospace, monospace">--verify  --design</tspan>  ·  Output → .claude/plans/</text>
+  </g>
+
+  <!-- /clear -->
+  <g transform="translate(0, 296)">
+    <line x1="150" y1="0" x2="300" y2="0" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="3,3"/>
+    <text x="316" y="4" font-size="10" font-family="ui-monospace, monospace" fill="#cbd5e1">/clear</text>
+    <line x1="356" y1="0" x2="500" y2="0" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="3,3"/>
+  </g>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- STEP 4: z-plan verify                        -->
+  <!-- ═══════════════════════════════════════════ -->
+  <g transform="translate(0, 314)">
+    <circle cx="100" cy="22" r="14" fill="#3b82f6"/>
+    <text x="100" y="27" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">4</text>
+    <line x1="114" y1="22" x2="148" y2="22" stroke="#3b82f6" stroke-width="1.5"/>
+    <rect x="150" y="0" width="490" height="44" rx="8" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5"/>
+    <text x="168" y="20" font-size="14" font-weight="700" fill="#3b82f6" font-family="ui-monospace, monospace">/z-plan --verify</text>
+    <text x="350" y="20" font-size="12" fill="#475569">Validate plan against issue</text>
+    <text x="168" y="36" font-size="11" fill="#94a3b8">Amendments saved → .claude/.local/</text>
+  </g>
+
+  <!-- /clear -->
+  <g transform="translate(0, 374)">
+    <line x1="150" y1="0" x2="300" y2="0" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="3,3"/>
+    <text x="316" y="4" font-size="10" font-family="ui-monospace, monospace" fill="#cbd5e1">/clear</text>
+    <line x1="356" y1="0" x2="500" y2="0" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="3,3"/>
+  </g>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- STEP 5: REPEAT ZONE (work → verify → commit)-->
+  <!-- ═══════════════════════════════════════════ -->
+
+  <!-- Repeat bracket -->
+  <rect x="70" y="388" width="700" height="148" rx="12" fill="#fef2f208" stroke="#ef444430" stroke-width="1.5" stroke-dasharray="6,4"/>
+  <text x="82" y="530" font-size="9" font-weight="600" fill="#ef4444" letter-spacing="1">REPEAT PER PHASE</text>
+
+  <!-- z-work box -->
+  <g transform="translate(0, 398)">
+    <circle cx="100" cy="22" r="16" fill="#ef4444"/>
+    <text x="100" y="27" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">5</text>
+    <line x1="116" y1="22" x2="148" y2="22" stroke="#ef4444" stroke-width="2"/>
+    <rect x="150" y="0" width="290" height="48" rx="8" fill="#fef2f2" stroke="#ef4444" stroke-width="2"/>
+    <text x="168" y="20" font-size="15" font-weight="700" fill="#ef4444" font-family="ui-monospace, monospace">/z-work P0..N</text>
+    <text x="168" y="38" font-size="11" fill="#94a3b8">Implement phase · tests · atomic commits</text>
+  </g>
+
+  <!-- Arrow: z-work → z-verify -->
+  <line x1="440" y1="422" x2="478" y2="422" stroke="#8b5cf6" stroke-width="1.5" marker-end="url(#arr-purple)"/>
+
+  <!-- z-verify box -->
+  <rect x="482" y="398" width="220" height="48" rx="8" fill="#f5f3ff" stroke="#8b5cf6" stroke-width="1.5" stroke-dasharray="5,4"/>
+  <text x="500" y="418" font-size="13" font-weight="700" fill="#8b5cf6" font-family="ui-monospace, monospace">/z-verify</text>
+  <rect x="588" y="406" width="52" height="20" rx="10" fill="#ede9fe"/>
+  <text x="614" y="420" text-anchor="middle" font-size="10" font-weight="600" fill="#7c3aed">optional</text>
+  <text x="500" y="438" font-size="11" fill="#94a3b8">Manual acceptance test</text>
+
+  <!-- Arrow: z-verify → /commit -->
+  <line x1="592" y1="446" x2="592" y2="462" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr-gray)"/>
+
+  <!-- /commit box -->
+  <rect x="482" y="466" width="220" height="48" rx="8" fill="#f8fafc" stroke="#64748b" stroke-width="1.5"/>
+  <text x="500" y="486" font-size="13" font-weight="700" fill="#64748b" font-family="ui-monospace, monospace">/commit</text>
+  <text x="500" y="504" font-size="11" fill="#94a3b8">Atomic commit per phase</text>
+
+  <!-- Loop-back arrow: /commit → z-work -->
+  <path d="M 482 490 C 440 490, 350 520, 350 520 C 290 520, 290 470, 290 448" fill="none" stroke="#ef4444" stroke-width="1.5" marker-end="url(#arr-red)"/>
+
+
+  <!-- /clear -->
+  <g transform="translate(0, 552)">
+    <line x1="150" y1="0" x2="300" y2="0" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="3,3"/>
+    <text x="316" y="4" font-size="10" font-family="ui-monospace, monospace" fill="#cbd5e1">/clear</text>
+    <line x1="356" y1="0" x2="500" y2="0" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="3,3"/>
+  </g>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- STEP 6: z-review                            -->
+  <!-- ═══════════════════════════════════════════ -->
+  <g transform="translate(0, 570)">
+    <circle cx="100" cy="26" r="14" fill="#ec4899"/>
+    <text x="100" y="31" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">6</text>
+    <line x1="114" y1="26" x2="148" y2="26" stroke="#ec4899" stroke-width="1.5"/>
+    <rect x="150" y="0" width="490" height="54" rx="8" fill="#fdf2f8" stroke="#ec4899" stroke-width="1.5"/>
+    <text x="168" y="22" font-size="14" font-weight="700" fill="#ec4899" font-family="ui-monospace, monospace">/z-review</text>
+    <text x="298" y="22" font-size="12" fill="#475569">Multi-agent code review + debate</text>
+    <rect x="530" y="10" width="50" height="20" rx="10" fill="#ec4899"/>
+    <text x="555" y="24" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">6 AI</text>
+    <text x="168" y="42" font-size="11" fill="#94a3b8">3 reviewers (quality · security · performance) + 3 debate agents</text>
+  </g>
+
+  <!-- /clear -->
+  <g transform="translate(0, 640)">
+    <line x1="150" y1="0" x2="300" y2="0" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="3,3"/>
+    <text x="316" y="4" font-size="10" font-family="ui-monospace, monospace" fill="#cbd5e1">/clear</text>
+    <line x1="356" y1="0" x2="500" y2="0" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="3,3"/>
+  </g>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- STEP 7: z-work fix                             -->
+  <!-- ═══════════════════════════════════════════ -->
+  <g transform="translate(0, 658)">
+    <circle cx="100" cy="22" r="14" fill="#ef4444"/>
+    <text x="100" y="27" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">7</text>
+    <line x1="114" y1="22" x2="148" y2="22" stroke="#ef4444" stroke-width="1.5"/>
+    <rect x="150" y="0" width="490" height="44" rx="8" fill="#fef2f2" stroke="#ef4444" stroke-width="1.5"/>
+    <text x="168" y="20" font-size="14" font-weight="700" fill="#ef4444" font-family="ui-monospace, monospace">/z-work --fix</text>
+    <text x="328" y="20" font-size="12" fill="#475569">Address review findings</text>
+    <text x="168" y="36" font-size="11" fill="#94a3b8">Runs the "Fix Issues" phase from the plan file</text>
+  </g>
+
+  <!-- /clear -->
+  <g transform="translate(0, 718)">
+    <line x1="150" y1="0" x2="300" y2="0" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="3,3"/>
+    <text x="316" y="4" font-size="10" font-family="ui-monospace, monospace" fill="#cbd5e1">/clear</text>
+    <line x1="356" y1="0" x2="500" y2="0" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="3,3"/>
+  </g>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- STEP 8: z-work docs                            -->
+  <!-- ═══════════════════════════════════════════ -->
+  <g transform="translate(0, 736)">
+    <circle cx="100" cy="22" r="14" fill="#06b6d4"/>
+    <text x="100" y="27" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">8</text>
+    <line x1="114" y1="22" x2="148" y2="22" stroke="#06b6d4" stroke-width="1.5"/>
+    <rect x="150" y="0" width="490" height="44" rx="8" fill="#ecfeff" stroke="#06b6d4" stroke-width="1.5"/>
+    <text x="168" y="20" font-size="14" font-weight="700" fill="#06b6d4" font-family="ui-monospace, monospace">/z-work --docs</text>
+    <text x="340" y="20" font-size="12" fill="#475569">Documentation phase</text>
+    <text x="168" y="36" font-size="11" fill="#94a3b8">Invokes /z-docs-update internally</text>
+  </g>
+
+  <!-- /clear -->
+  <g transform="translate(0, 796)">
+    <line x1="150" y1="0" x2="300" y2="0" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="3,3"/>
+    <text x="316" y="4" font-size="10" font-family="ui-monospace, monospace" fill="#cbd5e1">/clear</text>
+    <line x1="356" y1="0" x2="500" y2="0" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="3,3"/>
+  </g>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- STEP 9: z-done                              -->
+  <!-- ═══════════════════════════════════════════ -->
+  <g transform="translate(0, 814)">
+    <circle cx="100" cy="26" r="16" fill="#10b981"/>
+    <text x="100" y="31" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">9</text>
+    <line x1="116" y1="26" x2="148" y2="26" stroke="#10b981" stroke-width="2"/>
+    <rect x="150" y="0" width="490" height="54" rx="8" fill="#f0fdf4" stroke="#10b981" stroke-width="2"/>
+    <text x="168" y="22" font-size="15" font-weight="700" fill="#10b981" font-family="ui-monospace, monospace">/z-done</text>
+    <text x="276" y="22" font-size="12" fill="#475569">Quality gates → push → PR → cleanup</text>
+    <text x="168" y="42" font-size="11" fill="#94a3b8">Full test suite · lint · type-check · memory write · clean .local/ files</text>
+  </g>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- ALTERNATIVE FLOWS                           -->
+  <!-- ═══════════════════════════════════════════ -->
+  <line x1="80" y1="896" x2="720" y2="896" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="100" y="922" font-size="14" font-weight="700" fill="#0f172a">Alternative Flows</text>
+
+  <!-- Quick -->
+  <rect x="100" y="936" width="280" height="48" rx="8" fill="#fff7ed" stroke="#f97316" stroke-width="1.5"/>
+  <text x="118" y="956" font-size="13" font-weight="700" fill="#f97316" font-family="ui-monospace, monospace">/z-quick</text>
+  <text x="218" y="956" font-size="12" fill="#475569">→  /z-done</text>
+  <text x="118" y="974" font-size="11" fill="#94a3b8">Fast-track: start + work + test + commit</text>
+
+  <!-- Debug -->
+  <rect x="400" y="936" width="320" height="48" rx="8" fill="#fef2f2" stroke="#ef4444" stroke-width="1.5"/>
+  <text x="418" y="956" font-size="13" font-weight="700" fill="#ef4444" font-family="ui-monospace, monospace">/z-debug</text>
+  <text x="510" y="956" font-size="12" fill="#475569">→  investigate → fix</text>
+  <rect x="672" y="944" width="38" height="18" rx="9" fill="#ef4444"/>
+  <text x="691" y="957" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">4 AI</text>
+  <text x="418" y="974" font-size="11" fill="#94a3b8">3 investigators + judge · hypothesis loop</text>
+
+  <!-- Pause/Resume -->
+  <rect x="100" y="1000" width="620" height="40" rx="8" fill="#f8fafc" stroke="#94a3b8" stroke-width="1"/>
+  <text x="118" y="1024" font-size="13" font-weight="700" fill="#64748b" font-family="ui-monospace, monospace">/z-pause</text>
+  <text x="218" y="1024" font-size="11" fill="#94a3b8">save state  · · ·  time passes  · · ·</text>
+  <text x="440" y="1024" font-size="13" font-weight="700" fill="#64748b" font-family="ui-monospace, monospace">/z-resume</text>
+  <text x="548" y="1024" font-size="11" fill="#94a3b8">restore → continue /z-work</text>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- OTHER COMMANDS                              -->
+  <!-- ═══════════════════════════════════════════ -->
+  <line x1="80" y1="1060" x2="720" y2="1060" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="100" y="1086" font-size="14" font-weight="700" fill="#0f172a">Other Commands</text>
+  <text x="264" y="1086" font-size="11" fill="#94a3b8">Usable at any time, not part of the main workflow</text>
+
+  <!-- Row 1 -->
+  <rect x="100" y="1100" width="148" height="40" rx="6" fill="#faf5ff" stroke="#a855f730" stroke-width="1"/>
+  <text x="114" y="1118" font-size="11" font-weight="700" fill="#a855f7" font-family="ui-monospace, monospace">/z-test</text>
+  <text x="114" y="1132" font-size="10" fill="#94a3b8">Run full test suite</text>
+
+  <rect x="262" y="1100" width="148" height="40" rx="6" fill="#fdf2f8" stroke="#ec489930" stroke-width="1"/>
+  <text x="276" y="1118" font-size="11" font-weight="700" fill="#ec4899" font-family="ui-monospace, monospace">/z-design</text>
+  <text x="276" y="1132" font-size="10" fill="#94a3b8">UI/UX mockups</text>
+
+  <rect x="424" y="1100" width="148" height="40" rx="6" fill="#ecfeff" stroke="#06b6d430" stroke-width="1"/>
+  <text x="438" y="1118" font-size="11" font-weight="700" fill="#06b6d4" font-family="ui-monospace, monospace">/z-docs-update</text>
+  <text x="438" y="1132" font-size="10" fill="#94a3b8">Update DOCS.md</text>
+
+  <rect x="586" y="1100" width="148" height="40" rx="6" fill="#ecfeff" stroke="#06b6d430" stroke-width="1"/>
+  <text x="600" y="1118" font-size="11" font-weight="700" fill="#06b6d4" font-family="ui-monospace, monospace">/z-docs-optimise</text>
+  <text x="600" y="1132" font-size="10" fill="#94a3b8">Compress docs</text>
+
+  <!-- Row 2 -->
+  <rect x="100" y="1152" width="148" height="40" rx="6" fill="#eef2ff" stroke="#6366f130" stroke-width="1"/>
+  <text x="114" y="1170" font-size="11" font-weight="700" fill="#6366f1" font-family="ui-monospace, monospace">/z-project-init</text>
+  <text x="114" y="1184" font-size="10" fill="#94a3b8">Bootstrap new project</text>
+
+  <rect x="262" y="1152" width="166" height="40" rx="6" fill="#eef2ff" stroke="#6366f130" stroke-width="1"/>
+  <text x="276" y="1170" font-size="11" font-weight="700" fill="#6366f1" font-family="ui-monospace, monospace">/z-claudemd-review</text>
+  <text x="276" y="1184" font-size="10" fill="#94a3b8">Audit CLAUDE.md</text>
+
+  <rect x="442" y="1152" width="148" height="40" rx="6" fill="#fffbeb" stroke="#f59e0b30" stroke-width="1"/>
+  <text x="456" y="1170" font-size="11" font-weight="700" fill="#f59e0b" font-family="ui-monospace, monospace">/z-retrospective</text>
+  <text x="456" y="1184" font-size="10" fill="#94a3b8">Mine patterns</text>
+
+
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- LEGEND                                      -->
+  <!-- ═══════════════════════════════════════════ -->
+  <g transform="translate(100, 1220)">
+    <circle cx="6" cy="6" r="6" fill="#10b981"/>
+    <text x="18" y="10" font-size="10" fill="#64748b">Core step</text>
+
+    <circle cx="106" cy="6" r="6" fill="#fff" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="2,1.5"/>
+    <text x="118" y="10" font-size="10" fill="#64748b">Optional</text>
+
+    <rect x="186" y="-1" width="36" height="16" rx="8" fill="#ec4899"/>
+    <text x="204" y="11" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">AI</text>
+    <text x="228" y="10" font-size="10" fill="#64748b">Multi-agent</text>
+
+    <rect x="310" y="-1" width="30" height="16" rx="4" fill="#fff" stroke="#8b5cf6" stroke-width="1" stroke-dasharray="3,2"/>
+    <text x="346" y="10" font-size="10" fill="#64748b">Dashed = optional</text>
+
+    <rect x="440" y="-1" width="30" height="16" rx="4" fill="#fef2f208" stroke="#ef444430" stroke-width="1" stroke-dasharray="4,3"/>
+    <text x="476" y="10" font-size="10" fill="#64748b">Repeat zone</text>
+  </g>
+
+  <!-- Footer -->
+  <text x="400" y="1268" text-anchor="middle" font-size="10" fill="#cbd5e1">ZebraCode v1.4 · Claude Code Workflow Framework</text>
+</svg>

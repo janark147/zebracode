@@ -121,81 +121,11 @@ The config file is committed to git so all team members share the same ZebraCode
 
 ## Workflow Guide
 
-### Standard Feature Workflow
-
-```
-┌─────────────┐
-│ /z-start    │  ← Checkout branch, read issue, prepare tree
-└──────┬──────┘
-       │ /clear
-┌──────▼──────┐
-│ /z-groom    │  ← (Optional) Interactive grooming
-└──────┬──────┘
-       │ /clear
-┌──────▼──────┐
-│ /z-plan     │  ← Create plan with phases + must-haves
-└──────┬──────┘
-       │ /clear
-┌──────▼──────────┐
-│ /z-plan --verify│  ← Verify plan against checklist
-└──────┬──────────┘
-       │ /clear
-┌──────▼──────────┐
-│ /z-work P0      │  ← (If Phase 0: Design) runs /z-design
-└──────┬──────────┘
-       │ /clear
-┌──────▼──────┐    ┌──────────┐
-│ /z-work P1  │───►│ /z-verify│  ← (Optional) per-phase verification
-└──────┬──────┘    └──────────┘
-       │ /clear
-       │ ... (repeat for each phase)
-       │ /clear
-┌──────▼──────┐
-│ /z-review   │  ← Multi-agent review + debate
-└──────┬──────┘
-       │ /clear
-┌──────▼──────────────┐
-│ /z-work --fix       │  ← Address review findings
-└──────┬──────────────┘
-       │ /clear
-┌──────▼──────────────┐
-│ /z-work --docs      │  ← Documentation phase
-└──────┬──────────────┘
-       │ /clear
-┌──────▼──────┐
-│ /z-done     │  ← Quality gates, push, PR, memory write
-└─────────────┘
-```
+<p align="center">
+  <img src="zebracode-workflow.svg" alt="ZebraCode Standard Feature Workflow" width="700" />
+</p>
 
 **Key principle**: Run `/clear` between each skill invocation. Context is preserved via plan files, session files, and git history — not the conversation window.
-
-### Quick Fix Workflow
-
-For small, well-defined tasks that don't need a full plan:
-
-```
-/z-quick [issue]  →  (start + implement + test + commit)  →  /z-done
-```
-
-### Debug Workflow
-
-For investigating and fixing bugs:
-
-```
-/z-debug [issue]  →  (investigate + debate + attempt fix)
-├── PASS  →  commit  →  /z-done
-└── FAIL  →  /clear  →  /z-debug resume  →  (next hypothesis)
-```
-
-### Pause / Resume
-
-Save and restore session state at any point during `/z-work`:
-
-```
-/z-pause   →  (saves state + optional WIP commit)  →  leave
-... later ...
-/z-resume  →  (restores context)  →  /z-work (continues)
-```
 
 ---
 
