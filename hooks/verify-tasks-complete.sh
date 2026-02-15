@@ -8,8 +8,17 @@ INPUT=$(cat)
 CWD=$(echo "$INPUT" | jq -r '.cwd // empty')
 SESSION_ID=$(echo "$INPUT" | jq -r '.session_id // empty')
 
+# Validate SESSION_ID format (alphanumeric, hyphens, underscores only)
+if [[ -n "$SESSION_ID" && ! "$SESSION_ID" =~ ^[a-zA-Z0-9_-]+$ ]]; then
+  exit 0
+fi
+
 # Guard against infinite loops — if guard file exists, allow stop immediately
-GUARD_FILE="/tmp/zebracode-stop-guard-${SESSION_ID}"
+# Use user-specific directory with restrictive permissions to prevent symlink attacks
+GUARD_DIR="${TMPDIR:-/tmp}/zebracode-$(id -u)"
+mkdir -p "$GUARD_DIR" 2>/dev/null
+chmod 700 "$GUARD_DIR" 2>/dev/null
+GUARD_FILE="$GUARD_DIR/stop-guard-${SESSION_ID}"
 if [[ -f "$GUARD_FILE" ]]; then
   rm -f "$GUARD_FILE"
   exit 0

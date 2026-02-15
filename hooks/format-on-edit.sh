@@ -29,7 +29,8 @@ fi
 if [[ -n "$FORMAT_CMD" && "$FORMAT_CMD" != "null" ]]; then
   # Run in project directory
   cd "$CWD" 2>/dev/null || exit 0
-  eval "$FORMAT_CMD \"$FILE_PATH\"" 2>/dev/null
+  # Safe execution: FILE_PATH passed as positional arg $1 to prevent injection
+  bash -c "$FORMAT_CMD \"\$1\"" _ "$FILE_PATH" 2>/dev/null
   exit 0
 fi
 

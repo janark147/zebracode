@@ -38,12 +38,12 @@ A structured workflow framework for [Claude Code](https://docs.anthropic.com/en/
 | [Claude Code](https://docs.anthropic.com/en/docs/claude-code) | CLI agent (ZebraCode is a framework on top of it) |
 | `jq` | JSON parsing in hook scripts (`brew install jq`) |
 | `terminal-notifier` | Desktop notifications on macOS (`brew install terminal-notifier`) |
+| [Context7](https://github.com/upstash/context7) MCP | Framework/library documentation lookup (required by `/z-plan`, `/z-work`, `/z-review`) |
 
 ### Recommended MCPs
 
 | MCP | Purpose | Scope |
 |-----|---------|-------|
-| [Context7](https://github.com/upstash/context7) | Framework/library documentation lookup | Global |
 | [Statusline](https://github.com/anthropics/claude-code-statusline) | Status bar showing branch, plan progress | Global |
 | [Serena](https://github.com/oraios/serena) | Semantic code retrieval/editing | Global |
 

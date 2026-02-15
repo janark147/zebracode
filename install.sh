@@ -42,6 +42,20 @@ if ! command -v claude &>/dev/null; then
     [[ "$answer" =~ ^[Yy]$ ]] || exit 0
 fi
 
+if [[ "$(uname)" == "Darwin" ]] && ! command -v terminal-notifier &>/dev/null; then
+    warn "'terminal-notifier' not found. Desktop notifications will not work."
+    echo "  Install: brew install terminal-notifier"
+    read -rp "  Install now? [Y/n] " answer
+    if [[ ! "$answer" =~ ^[Nn]$ ]]; then
+        if command -v brew &>/dev/null; then
+            brew install terminal-notifier
+            ok "terminal-notifier installed"
+        else
+            error "Homebrew not found. Install manually: brew install terminal-notifier"
+        fi
+    fi
+fi
+
 # ── Create ~/.claude if needed ────────────────
 
 if [ ! -d "$CLAUDE_DIR" ]; then
@@ -212,7 +226,8 @@ if [ "$ERRORS" -eq 0 ]; then
     echo "    3. Run /z-start [issue] to begin a feature"
     echo ""
 else
-    echo -e "  ${YELLOW}Installation completed with $ERRORS warning(s).${NC}"
-    echo "  Review the warnings above."
+    echo -e "  ${RED}Installation failed with $ERRORS error(s).${NC}"
+    echo "  Review the errors above and re-run the installer."
     echo ""
+    exit 1
 fi

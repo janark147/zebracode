@@ -12,11 +12,27 @@ CWD=$(echo "$INPUT" | jq -r '.cwd // empty')
 [[ -z "$COMMAND" ]] && exit 0
 
 # Built-in dangerous patterns (always blocked)
+# Covers: Laravel, Django, Rails, and generic SQL
 BUILTIN_PATTERNS=(
+  # Laravel
   "seed:fresh"
   "migrate:fresh"
   "db:wipe"
   "migrate:reset"
+  # Django
+  "manage.py flush"
+  "manage.py sqlflush"
+  "manage.py reset_db"
+  # Rails
+  "db:drop"
+  "db:reset"
+  "db:schema:load"
+  "db:purge"
+  # Generic SQL
+  "DROP TABLE"
+  "DROP DATABASE"
+  "TRUNCATE "
+  "DELETE FROM"
 )
 
 # Read additional patterns from config if available

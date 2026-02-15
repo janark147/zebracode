@@ -11,12 +11,16 @@ CWD=$(echo "$INPUT" | jq -r '.cwd // empty')
 # No file path = allow
 [[ -z "$FILE_PATH" ]] && exit 0
 
+# Validate path: must be absolute, reject path traversal attempts
+[[ "$FILE_PATH" != /* ]] && exit 0
+[[ "$FILE_PATH" == *".."* ]] && exit 0
+
 # Resolve to basename and relative path for pattern matching
 BASENAME=$(basename "$FILE_PATH")
 # Make path relative to CWD for pattern matching
 REL_PATH="$FILE_PATH"
 if [[ -n "$CWD" && "$FILE_PATH" == "$CWD"* ]]; then
-  REL_PATH="${FILE_PATH#$CWD/}"
+  REL_PATH="${FILE_PATH#"$CWD"/}"
 fi
 
 # Try to read protected patterns from z-project-config.yml
