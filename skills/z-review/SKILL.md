@@ -158,7 +158,19 @@ For each phase that has review findings, append summary lines to that phase's `#
 > **Severity:** Critical {n} · High {n} · Medium {n} · Low {n}
 
 ───────────────────────────────────────────────────────────────
+
+**If issues marked to fix (M > 0):**
+
 **▶ Next** · `/z-work {issue} --fix` — address {M} review findings
+
+*`/clear` first — fresh context*
+
+**Also available:**
+- `/z-pause` — save and stop
+
+**If clean review (M = 0):**
+
+**▶ Next** · `/z-done {issue}` — finalize and wrap up
 
 *`/clear` first — fresh context*
 
