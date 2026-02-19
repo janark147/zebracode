@@ -150,6 +150,7 @@ The config file is committed to git so all team members share the same ZebraCode
 |-------|-------------|-----------|
 | `/z-pause` | Save session state for later resumption | — |
 | `/z-resume` | Restore session from pause file | — |
+| `/z-continue` | Load branch context for ad-hoc post-work tasks | — |
 | `/z-quick` | Fast-track: start + implement + test + commit | `[issue] [branch]` |
 | `/z-debug` | Multi-agent bug investigation with hypothesis testing | `[issue-id \| resume] [branch]` |
 
