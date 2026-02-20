@@ -228,33 +228,29 @@ if [ -d "$resolve_dir/.claude/plans" ]; then
     if [ -n "$plan_file" ]; then
       total_phases=$(grep -cE '^#{2,3} .*[Pp]hase' "$plan_file" 2>/dev/null || echo 0)
       if [ "$total_phases" -gt 0 ]; then
-        completed_phases=0
-        in_phase=""
-        next_phase=""
-        phase_has_unchecked=false
+        phase_number=0
+        current_phase_number=0
+        current_phase_name=""
 
         while IFS= read -r line; do
           if [[ "$line" =~ ^#{2,3}\ .*[Pp]hase ]]; then
-            if [ -n "$in_phase" ] && [ "$phase_has_unchecked" = false ]; then
-              ((completed_phases++))
-            fi
-            in_phase=$(echo "$line" | sed 's/^#\{2,3\} //')
+            ((phase_number++))
             phase_has_unchecked=false
+            in_phase=$(echo "$line" | sed 's/^#\{2,3\} //')
           elif [[ "$line" == *"- [ ]"* ]]; then
-            phase_has_unchecked=true
-            [ -z "$next_phase" ] && next_phase="$in_phase"
+            if [ "$current_phase_number" -eq 0 ]; then
+              current_phase_number=$phase_number
+              current_phase_name="$in_phase"
+            fi
           fi
         done < "$plan_file"
 
-        # Handle last phase
-        if [ -n "$in_phase" ] && [ "$phase_has_unchecked" = false ]; then
-          ((completed_phases++))
-        fi
-
-        if [ -n "$next_phase" ]; then
-          phase_txt="Phase ${completed_phases}/${total_phases}: ${next_phase}"
+        if [ "$current_phase_number" -gt 0 ]; then
+          # Strip "Phase N: " or "Phase N — " prefix to avoid duplication
+          clean_name=$(echo "$current_phase_name" | sed 's/^[Pp]hase [0-9]*[:.—–-] *//')
+          phase_txt="Phase ${current_phase_number}/${total_phases}: ${clean_name}"
         else
-          phase_txt="Phase ${completed_phases}/${total_phases}: All complete"
+          phase_txt="Phase ${total_phases}/${total_phases}: All complete"
         fi
       fi
     fi
