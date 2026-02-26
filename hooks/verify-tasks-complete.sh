@@ -94,11 +94,8 @@ touch "$GUARD_FILE"
 
 cat <<EOF
 {
-  "hookSpecificOutput": {
-    "hookEventName": "Stop",
-    "decision": "block",
-    "reason": "Incomplete items found: ${TOTAL_UNCHECKED} unchecked task(s) in started phases (${TOTAL_CHECKED} completed). Are you sure you want to stop? If yes, stop again to confirm."
-  }
+  "decision": "block",
+  "reason": "Incomplete items found: ${TOTAL_UNCHECKED} unchecked task(s) in started phases (${TOTAL_CHECKED} completed). Are you sure you want to stop? If yes, stop again to confirm."
 }
 EOF
 exit 2
