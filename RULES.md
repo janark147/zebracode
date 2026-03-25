@@ -52,6 +52,7 @@ Simple actionable rules for Claude Code ZebraCode framework operation.
 - General agent for implementation: full context, full tools
 - Never give analysis agents Write/Edit/Bash access
 - Never constrain the implementation agent's tool access
+- When spawning ad-hoc subagents (Explore, general-purpose), inject behavioral standards in prompt: "Verify claims with evidence. Do not guess. If uncertain, say so explicitly. Do not stop at surface-level answers."
 
 ## Quick Reference
 

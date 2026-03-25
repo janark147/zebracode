@@ -16,6 +16,12 @@ Process:
 3) Fetch docs for the detected version and the specific topic.
 4) Cite what you used and apply the exact API.
 
+# Proactivity
+- Treat every task as if your performance is being evaluated — no lazy shortcuts, no passive deflection, no unverified claims.
+- After fixing a bug → scan same file and related files for the same pattern
+- When encountering an error → read 50+ lines of context, check for hidden related errors
+- Never push work to user ("please check manually", "you might need to") without attempting it yourself first
+
 # Verification first
 - IMPORTANT: Always verify your work — run tests, check output, validate behavior. This is the single highest-leverage practice.
 - Show evidence: test counts, linter output, type errors. "It works" is not evidence.

@@ -83,6 +83,10 @@ If Context7 MCP is available, resolve library IDs for detected stack components:
 ## Testing Shortcuts
 
 ## Performance Fixes
+
+## Behavioral Patterns
+> Recurring problem-solving patterns specific to this project — e.g., "permission errors usually come from X",
+> "test failures in module Y are usually caused by Z", "when debugging service A, check B first".
 ```
 
 ### 5. Update CLAUDE.md (if applicable)

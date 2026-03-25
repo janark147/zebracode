@@ -138,7 +138,21 @@ If ANY must-have cannot be verified: **STOP** and ask user via AskUserQuestion.
 
 Each phase gets its own commit (or multiple small commits within a phase). Never bundle multiple phases into one commit. Commit messages should be short and to the point — just the main result.
 
-### Step 8: Self-Reflection Checkpoint
+### Step 8: Self-Audit Before Commit
+
+Before committing phase work, answer these five questions:
+
+1. **Evidence**: Did I verify with concrete output (test results, build output, curl response) — not just "it works"?
+2. **Surroundings**: Did I scan the same file and related files for similar issues or patterns?
+3. **Edge cases**: Did I handle empty/null inputs, boundary values, and invalid states?
+4. **Proper fix**: Is this a root-cause fix or a workaround? If workaround, flag it.
+5. **Review-ready**: Would this survive code review without changes?
+
+If all 5 pass → proceed to commit.
+- Any "no" → fix before committing. If unfixable, flag to user via AskUserQuestion.
+- Append audit result to Work Log: `- /z-work audit — {pass|issues found: ...}`
+
+### Step 9: Self-Reflection Checkpoint
 
 Before announcing phase completion, silently evaluate:
 - Where did I use a default/template pattern instead of making a deliberate choice for this codebase?
@@ -150,7 +164,7 @@ If nothing surfaces → proceed silently.
 - Minor concern → append to Work Log: `- /z-work ⚠ — {concern}`
 - Genuine issue → flag to user via AskUserQuestion before completing
 
-### Step 9: Phase Summary & Completion Screen
+### Step 10: Phase Summary & Completion Screen
 
 Display evidence-based progress, then the completion screen:
 

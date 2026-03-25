@@ -46,15 +46,26 @@ Check `.claude/.local/*-debug.md` files (if any survive):
 1. **Root cause clustering** — common bug categories across debug sessions
 2. **Failed hypothesis patterns** — investigation angles that never pay off (may indicate a blind spot in debugging approach)
 
-### Step 5: Cross-Reference & Cluster
+### Step 5: Scan Behavioral Effectiveness
 
-Group related findings from Steps 1-4 into themes:
+Assess how effectively the framework drove quality behavior:
+
+1. **Failure escalation frequency** — search Work Logs for `⚠` markers and audit entries with issues. How often did self-audit catch problems before commit vs. review catching them after?
+2. **Proactive scanning hits** — did "scan surrounding files" catches appear in Work Logs? Count instances where related issues were found proactively vs. discovered later in review or production.
+3. **Deflection patterns** — scan for AskUserQuestion calls that pushed work to the user. Were they genuine blockers or avoidable with more investigation?
+4. **Recurring failure modes** — cluster failure patterns: same-approach repetition, giving up early, sloppy completion, guessing without reading. Track which modes recur across issues.
+
+Collect findings with concrete evidence (plan refs, commit hashes, file:line).
+
+### Step 6: Cross-Reference & Cluster
+
+Group related findings from Steps 1-5 into themes:
 
 - Example: "N+1 query found in review" + "N+1 bug debugged" + "N+1 added to pitfalls" = **systemic theme: N+1 queries**
 - Rank themes by **frequency** (how often it appeared) and **impact** (severity of associated issues)
 - **Maximum 5 themes** — do not overwhelm the user. Pick the most impactful.
 
-### Step 6: Present Themes
+### Step 7: Present Themes
 
 For each theme (one at a time), present via **AskUserQuestion**:
 
@@ -71,7 +82,7 @@ For each theme (one at a time), present via **AskUserQuestion**:
 
 Options for each theme: "Apply suggested action", "Apply different action", "No action — skip"
 
-### Step 7: Apply Approved Actions
+### Step 8: Apply Approved Actions
 
 For each approved action:
 
@@ -81,14 +92,14 @@ For each approved action:
 - **Refactor**: Create a note for the user (do not refactor in this skill — it's analysis-only)
 - **No action**: Skip
 
-### Step 8: Completion Screen
+### Step 9: Completion Screen
 
 **━━━ ✓ Retrospective Complete ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━**
 **{N} themes found**
 
 | | |
 |---|---|
-| **Artifacts scanned** | {N} plan files, {N} commits, {N} debug files |
+| **Artifacts scanned** | {N} plan files, {N} commits, {N} debug files, behavioral logs |
 | **Themes found** | {N} |
 | **Actions taken** | {N} CLAUDE.md updates, {N} patterns recorded |
 | **Deferred** | {N} |
