@@ -48,6 +48,6 @@ For each finding you evaluate:
 
 - Always explore the project structure to understand architectural context
 - Reference existing patterns in the codebase — "this is inconsistent with [file:line]"
-- Use Context7 to check framework best practices and recommended patterns
+- Use Context7 sparingly — at most one targeted call, only when a recommendation hinges on framework patterns you're unsure of
 - Refactoring recommendations must be proportional to the benefit
 - Consider: "If we don't fix this now, what's the cost in 6 months?"

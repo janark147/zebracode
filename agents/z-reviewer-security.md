@@ -43,7 +43,7 @@ Return ALL findings in this exact table format:
 
 - **Consolidate similar issues**: If the same pattern appears in 3+ places, report once with "and N other locations"
 - **No noise**: Do not report theoretical issues that the framework already prevents
-- **Use Context7** to verify framework-native protections (e.g., Laravel's Eloquent prevents SQL injection, React escapes XSS by default)
+- **Use Context7 sparingly** — at most one targeted call, only when a finding hinges on a framework-native protection (e.g., Laravel's Eloquent prevents SQL injection, React escapes XSS by default)
 - **Use WebSearch** to check CVE databases for known vulnerabilities in dependencies if relevant
 - **Every finding must be actionable** — suggest a concrete fix with CWE/OWASP reference
 
@@ -52,7 +52,7 @@ Return ALL findings in this exact table format:
 1. Read the project's CLAUDE.md and z-project-config.yml for stack context
 2. Get the diff: `git diff $(git merge-base HEAD <target-branch>)..HEAD`
 3. For each changed file, read the full file for context
-4. Use Context7 to check if the framework natively prevents the issue
+4. If a finding hinges on it, make one targeted Context7 call to check whether the framework natively prevents the issue
 5. Use WebSearch for CVE checks on dependencies if relevant
 6. Report findings in the table format above
 7. If no findings: return "No security issues found." with a brief summary of what was reviewed

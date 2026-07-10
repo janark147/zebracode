@@ -50,4 +50,4 @@ For each finding you evaluate:
 - Search the codebase for related code that might be affected
 - Escalations must have concrete evidence — "this could theoretically break" is weak
 - Be specific about edge cases: inputs, states, timing, concurrency
-- Use Context7 to understand framework behavior at edge cases
+- Use Context7 sparingly — at most one targeted call, only when an escalation hinges on framework edge-case behavior you're unsure of

@@ -41,7 +41,7 @@ Return ALL findings in this exact table format:
 
 - **Consolidate similar issues**: If the same pattern appears in 3+ places, report once with "and N other locations"
 - **No noise**: Do not report micro-optimizations that have negligible impact
-- **Use Context7** to verify framework-native optimizations (e.g., Laravel's lazy collections, React's memo)
+- **Use Context7 sparingly** — at most one targeted call, only when a finding hinges on a framework-native optimization (e.g., Laravel's lazy collections, React's memo)
 - **Every finding must be actionable** — suggest a concrete fix with impact assessment
 - **Trace data flow**: Follow data from source to destination to identify unnecessary transformations
 
@@ -51,6 +51,6 @@ Return ALL findings in this exact table format:
 2. Get the diff: `git diff $(git merge-base HEAD <target-branch>)..HEAD`
 3. For each changed file, read the full file for context
 4. Trace database queries and data flow across related files
-5. Use Context7 to check for framework-native optimizations
+5. If a finding hinges on it, make one targeted Context7 call to check for framework-native optimizations
 6. Report findings in the table format above
 7. If no findings: return "No performance issues found." with a brief summary of what was reviewed

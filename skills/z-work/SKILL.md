@@ -16,7 +16,7 @@ required-config:
 
 1. Read `.claude/z-project-config.yml`. If missing → display validation-failed screen and redirect to `/z-project-init`.
 2. Check required config key: `git.target_branch`. If missing → display validation-failed screen and redirect to `/z-project-init`.
-3. Verify Context7 MCP is available: call `mcp__context7__get-library-docs` with a `context7_ids` value from config (or fall back to `mcp__context7__resolve-library-id` if no IDs cached). If unavailable → display validation-failed screen with install hint.
+3. Verify Context7 MCP is available: check that `mcp__context7__*` tools are present in your available tools. Do NOT make a Context7 call just to test availability — that wastes a full doc fetch. If absent → display validation-failed screen with install hint.
 4. **Clean working tree check**: Run `git status --porcelain`. If output is non-empty → STOP and ask via AskUserQuestion: "Working tree has uncommitted changes. Did you forget to `/commit`?" Do not proceed until the tree is clean.
 5. **Predecessor check**: Check that a plan file exists in `.claude/plans/` matching the issue or branch. If no plan file found → display blocked screen and redirect to `/z-plan {issue}`.
 
@@ -85,8 +85,8 @@ For each undone action point in the phase:
 
 1. **Pick** the next unchecked action point
 2. **Analyze** implementation requirements, detect technology context
-3. **Coordinate** with MCP servers:
-   - Context7 for framework/library patterns (or Magic MCP if design phase)
+3. **Coordinate** with MCP servers only when needed:
+   - Context7 only when uncertain about a framework/library API — not as a routine per-step call (Magic MCP if design phase)
    - Use AskUserQuestion tool liberally when uncertain
 4. **Implement** the step — write production-quality code:
    - Follow existing project conventions and patterns

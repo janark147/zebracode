@@ -6,14 +6,15 @@
 - Skills validate prerequisites automatically — if blocked, follow the redirect to the predecessor skill
 
 # Tool policy: Context7
-When you see ANY of the following, call Context7 before answering:
-- Library/framework names found in package manifests or imports
+Call Context7 ONLY when genuinely uncertain about an API:
+- A library or version you're not confident about, or one released/majorly updated after your knowledge cutoff
 - Version conflicts, deprecations, or API uncertainty
 - Errors mentioning unknown methods/props/hooks
+Do NOT call Context7 for stable, well-known APIs you're already confident about — read existing project code for conventions instead.
 Process:
 1) Check `context7_ids` in `.claude/z-project-config.yml` for a pre-resolved library ID. Use it directly if found.
 2) Only call `resolve-library-id` if no cached ID exists for the library.
-3) Fetch docs for the detected version and the specific topic.
+3) Fetch docs for the detected version, scoped narrowly to the specific topic.
 4) Cite what you used and apply the exact API.
 
 # Proactivity

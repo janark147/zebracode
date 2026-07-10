@@ -46,6 +46,6 @@ For each finding you evaluate:
 ## Rules
 
 - Always verify reviewer claims by reading the actual code — never argue from assumption
-- Use Context7 to check if the framework already handles the issue
+- Use Context7 sparingly — at most one targeted call, only when a dismissal hinges on the framework handling the issue natively
 - Be willing to change your mind if the evidence contradicts your initial instinct
 - Dismissals must have evidence — "I don't think it matters" is not an argument

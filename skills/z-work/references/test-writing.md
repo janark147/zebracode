@@ -8,7 +8,7 @@ Loaded during every phase that introduces new or changed behavior. Absorbs the f
 2. **Read existing test suites**: Examine `tests/`, `spec/`, `__tests__/`, or equivalent for patterns, helpers, fixtures, and conventions. **Your goal is to always use the same patterns throughout the app.**
 3. **Read project docs**: Check CLAUDE.md and DOCS.md for test-specific instructions, custom helpers, testing conventions.
 4. **Read config**: Use `commands.test_backend` and `commands.test_frontend` from `z-project-config.yml` for run commands.
-5. **Use Context7**: Research test framework APIs (PHPUnit, Jest, Vitest, pytest, RSpec, etc.) via Context7 MCP for correct assertion syntax and patterns.
+5. **Use Context7 only when uncertain**: Rely on existing test suite patterns for mainstream frameworks (PHPUnit, Jest, Vitest, pytest, RSpec, etc.). Call Context7 only if the test framework or its major version is unfamiliar, or an assertion API fails unexpectedly.
 
 ## Coverage Requirements
 

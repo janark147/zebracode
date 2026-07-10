@@ -19,7 +19,7 @@ Comprehensive code review with 3 parallel review agents, optional 3-agent debate
 
 1. Read `.claude/z-project-config.yml`. If missing → redirect to `/z-project-init`.
 2. Check required config keys: `git.target_branch`, `stack.language`, `stack.framework`. If missing → redirect to `/z-project-init`.
-3. Verify Context7 MCP is available: call `mcp__context7__get-library-docs` with a `context7_ids` value from config (or fall back to `mcp__context7__resolve-library-id` if no IDs cached). If unavailable → display validation-failed screen.
+3. Verify Context7 MCP is available: check that `mcp__context7__*` tools are present in your available tools. Do NOT make a Context7 call just to test availability — that wastes a full doc fetch. If absent → display validation-failed screen.
 4. **Clean working tree check**: Run `git status --porcelain`. If output is non-empty → STOP and ask via AskUserQuestion: "Working tree has uncommitted changes. Did you forget to `/commit`?" Do not proceed until the tree is clean.
 5. **Predecessor check**: Check that `git diff` against target branch is non-empty. If empty → redirect to `/z-work`.
 
@@ -69,7 +69,7 @@ Spawn all 3 review agents in parallel using the Task tool. Each agent receives:
 - Architecture/style rules from DOCS.md
 - Known patterns from `project-patterns.md`
 - Plan file content (for requirements context)
-- Instructions to use Context7 to verify framework-native protections (suppress false positives)
+- Instructions to use Context7 sparingly: at most one targeted call, only to verify a specific framework-native protection a finding hinges on (suppress false positives)
 
 **Agents**:
 
