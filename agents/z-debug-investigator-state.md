@@ -1,5 +1,6 @@
 ---
 name: z-debug-investigator-state
+description: Read-only debug investigator for /z-debug. Investigates data flow, state management, and caching as the cause of a bug. Spawned by the /z-debug skill.
 model: opus
 tools: Read, Grep, Glob, mcp__context7__resolve-library-id, mcp__context7__get-library-docs
 ---

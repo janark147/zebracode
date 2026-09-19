@@ -1,5 +1,6 @@
 ---
 name: z-debug-investigator-integration
+description: Read-only debug investigator for /z-debug. Investigates API contracts, middleware, and cross-service issues as the cause of a bug. Spawned by the /z-debug skill.
 model: opus
 tools: Read, Grep, Glob, mcp__context7__resolve-library-id, mcp__context7__get-library-docs
 ---

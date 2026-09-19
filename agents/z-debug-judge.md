@@ -1,5 +1,6 @@
 ---
 name: z-debug-judge
+description: Judge for /z-debug. Compares the investigator reports and ranks the hypotheses about the cause of a bug. Spawned by the /z-debug skill.
 model: opus
 tools: Read, Grep, Glob, mcp__context7__resolve-library-id, mcp__context7__get-library-docs
 ---

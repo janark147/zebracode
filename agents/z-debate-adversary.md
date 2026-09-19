@@ -1,5 +1,6 @@
 ---
 name: z-debate-adversary
+description: Debate agent for the /z-review debate ring. Looks for how each review finding can break in practice and which edge cases were missed. Spawned by the /z-review skill.
 model: fable
 tools: Read, Grep, Glob, mcp__context7__resolve-library-id, mcp__context7__get-library-docs
 ---
