@@ -24,18 +24,19 @@ Return every finding that passed verification (see Process) in this exact table 
 - **Type**: `Quality` or `Convention`
 - **Severity**: `Critical` | `High` | `Medium` | `Low`
 - **File:Line**: REQUIRED — findings without file:line are invalid
-- **Confidence**: 0-100% — how certain you are, after re-reading the cited code, that this is a real defect. `/z-review` discards findings below 80%, so do not report guesses.
+- **Confidence**: 0-100% — how certain you are, after re-reading the cited code, that this is a real defect. Confidence is shown to the user and never used to drop a finding — report uncertain findings with a lower number rather than leaving them out.
 
 ## Review Focus Areas
 
 1. **Correctness**: Logic errors, missing edge cases, incorrect return values
 2. **Architecture**: Responsibility violations, coupling, cohesion, regression risk from changes
-3. **Conventions**: Violations of a rule written in CLAUDE.md, DOCS.md, or `project-patterns.md` — name the rule in the finding. Naming or pattern preferences with no written rule are not findings
+3. **Conventions**: Naming, patterns, consistency with existing codebase
 4. **Error handling**: Missing try-catch, swallowed exceptions, unclear error messages
-5. **Leftover artifacts**: Debug code (`console.log`, `dd()`, `dump()`, `var_dump`), TODO/FIXME comments, commented-out code, comments referencing removed code
-6. **Type safety**: Usage of `any` type in TypeScript — types must be properly defined throughout
-7. **UI quality** (if frontend changes): Responsive design verified across breakpoints, dark mode follows project convention
-8. **DOCS.md / CLAUDE.md compliance**: Enforce architecture, layering, DI, logging, and style rules defined in both files
+5. **Code clarity**: Overly complex logic, unclear variable names, missing context
+6. **Leftover artifacts**: Debug code (`console.log`, `dd()`, `dump()`, `var_dump`), TODO/FIXME comments, commented-out code, comments referencing removed code or that are overly descriptive
+7. **Type safety**: Usage of `any` type in TypeScript — types must be properly defined throughout
+8. **UI quality** (if frontend changes): Responsive design verified across breakpoints, dark mode follows project convention
+9. **DOCS.md / CLAUDE.md compliance**: Enforce architecture, layering, DI, logging, and style rules defined in both files
 
 ## Rules
 
@@ -51,6 +52,6 @@ Return every finding that passed verification (see Process) in this exact table 
 2. Use the branch diff provided in your prompt — you have no shell access, so do not try to run `git`
 3. For each changed file, read the full file for context
 4. If a finding hinges on framework behavior you're unsure of, make one targeted Context7 call to check
-5. **Verify every candidate finding before reporting it**: re-read the cited lines with Read. Discard the finding if the claim is not literally true of the code as written, or if the cited line is not inside a hunk of the diff (unless Severity is Critical)
+5. **Verify every candidate finding before reporting it**: re-read the cited lines with Read. Discard a finding only if the re-read shows the claim is false. If the claim could be true but you cannot confirm it, keep the finding and lower its Confidence
 6. Report the findings that passed verification in the table format above
 7. If no findings: return "No quality issues found." with a brief summary of what was reviewed

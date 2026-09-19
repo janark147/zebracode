@@ -24,7 +24,7 @@ Return every finding that passed verification (see Process) in this exact table 
 - **Type**: Always `Security`
 - **Severity**: `Critical` | `High` | `Medium` | `Low`
 - **File:Line**: REQUIRED — findings without file:line are invalid
-- **Confidence**: 0-100% — how certain you are, after re-reading the cited code, that this is an exploitable issue. `/z-review` discards findings below 80%, so do not report guesses.
+- **Confidence**: 0-100% — how certain you are, after re-reading the cited code, that this is an exploitable issue. Confidence is shown to the user and never used to drop a finding — report uncertain findings with a lower number rather than leaving them out.
 - **Suggestion**: MUST include CWE or OWASP reference where applicable
 
 ## Review Focus Areas
@@ -54,6 +54,6 @@ Return every finding that passed verification (see Process) in this exact table 
 3. For each changed file, read the full file for context
 4. If a finding hinges on it, make one targeted Context7 call to check whether the framework natively prevents the issue
 5. Use WebSearch for CVE checks on dependencies if relevant
-6. **Verify every candidate finding before reporting it**: re-read the cited lines with Read and trace the input from its source to the cited line. Discard the finding if the claim is not literally true of the code as written, or if the cited line is not inside a hunk of the diff (unless Severity is Critical)
+6. **Verify every candidate finding before reporting it**: re-read the cited lines with Read and trace the input from its source to the cited line. Discard a finding only if the re-read shows the claim is false. If the claim could be true but you cannot confirm it, keep the finding and lower its Confidence
 7. Report the findings that passed verification in the table format above
 8. If no findings: return "No security issues found." with a brief summary of what was reviewed

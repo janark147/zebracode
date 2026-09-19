@@ -92,22 +92,17 @@ Spawn all 3 review agents in parallel using the Task tool. Each agent receives:
 - Skip unchanged code (unless Critical severity)
 - No noise: no style preferences, subjective opinions, or "nice to have" improvements
 - Every finding MUST have `file:line` — findings without citations are invalid and discarded
-- Verify before reporting: re-read the cited lines and discard any finding whose claim is not literally true of the code as written
-- Confidence is the agent's certainty after that re-read. Findings below 80% are discarded in Step 4
+- Verify before reporting: re-read the cited lines. Discard a finding only if the re-read shows the claim is false. If the claim could be true but you cannot confirm it, keep the finding and lower its Confidence
+- Confidence is the agent's certainty after that re-read. It is shown to the user and is never used to drop a finding — the user decides
 
-### Step 4: Consolidate and Filter Findings
+### Step 4: Consolidate Findings
 
 After all agents complete:
 
-1. Merge all agent output tables into one consolidated table
-2. Apply these filters in order, and count how many findings each one removes. Must-have failures from Step 2 are exempt from all filters.
-   - **Confidence**: discard findings with Confidence below 80%
-   - **Changed lines only**: discard findings whose `File:Line` is not inside a hunk of `git diff {target_branch}...HEAD` (a hunk header `@@ -a,b +c,d @@` covers new-file lines `c` to `c+d-1`). Exception: keep Critical findings regardless of location
-   - **Already handled**: discard findings that match an entry in the plan's "Fix Issues" or "Disregarded Issues" sections. Match on file path + Type + the same underlying problem. Ignore IDs and line numbers — IDs restart every run and line numbers shift
-   - **Low severity**: remove Low findings from the table. Keep them in a separate list and show that list only if the user asks
-3. Prepend must-have failures from Step 2 (Severity: Critical, auto-included)
-4. Sort by Severity: Critical → High → Medium
-5. Below the table, display one line: `Filtered out: {n} below 80% confidence · {n} outside changed lines · {n} already in plan · {n} Low severity (hidden)`
+1. Merge all agent output tables into one consolidated table. Keep every finding regardless of Confidence or Severity
+2. Prepend must-have failures from Step 2 (Severity: Critical, auto-included)
+3. Check "Fix Issues" and "Disregarded Issues" sections in the plan — do not re-flag already listed items. Match on file path + Type + the same underlying problem. Ignore IDs and line numbers — IDs restart every run and line numbers shift
+4. Sort by Severity: Critical → High → Medium → Low
 
 ### Step 5: Debate Ring (Optional)
 
@@ -168,9 +163,8 @@ For each phase that has review findings, append summary lines to that phase's `#
 | **Issues found** | {N} (Q:{n} S:{n} P:{n}) |
 | **To fix** | {M} *(added to Fix Issues phase)* |
 | **Dismissed** | {D} |
-| **Filtered out** | {F} *(low confidence, outside changed lines, already in plan, Low severity)* |
 
-> **Severity:** Critical {n} · High {n} · Medium {n} · Low {n} *(hidden)*
+> **Severity:** Critical {n} · High {n} · Medium {n} · Low {n}
 
 ───────────────────────────────────────────────────────────────
 
