@@ -206,17 +206,17 @@ ZebraCode includes 10 custom agent definitions for multi-agent workflows.
 
 | Agent | Focus | Model |
 |-------|-------|-------|
-| `z-reviewer-quality` | Code quality, patterns, maintainability | Opus |
-| `z-reviewer-security` | Security vulnerabilities, OWASP, data exposure | Opus |
-| `z-reviewer-performance` | Performance bottlenecks, N+1 queries, caching | Opus |
+| `z-reviewer-quality` | Code quality, patterns, maintainability | Fable |
+| `z-reviewer-security` | Security vulnerabilities, OWASP, data exposure | Fable |
+| `z-reviewer-performance` | Performance bottlenecks, N+1 queries, caching | Fable |
 
 ### Debate Agents (spawned by `/z-review` debate ring)
 
 | Agent | Personality | Model |
 |-------|-------------|-------|
-| `z-debate-pragmatist` | Practical, trade-off focused, ships features | Sonnet |
-| `z-debate-adversary` | Adversarial, edge-case hunter, worst-case thinker | Sonnet |
-| `z-debate-architect` | Big-picture, system design, long-term implications | Opus |
+| `z-debate-pragmatist` | Practical, trade-off focused, ships features | Fable |
+| `z-debate-adversary` | Adversarial, edge-case hunter, worst-case thinker | Fable |
+| `z-debate-architect` | Big-picture, system design, long-term implications | Fable |
 
 ### Debug Agents (spawned by `/z-debug`)
 

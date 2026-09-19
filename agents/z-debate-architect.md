@@ -1,6 +1,6 @@
 ---
 name: z-debate-architect
-model: opus
+model: fable
 tools: Read, Grep, Glob, mcp__context7__resolve-library-id, mcp__context7__get-library-docs
 ---
 

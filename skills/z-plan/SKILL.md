@@ -211,7 +211,7 @@ existing implementations to build on, potential conflicts}
 {references /z-docs-update skill}
 
 ## Disregarded Issues
-{populated by /z-plan --verify and /z-review}
+{populated by /z-plan --verify and /z-review — /z-review entries use the format `- [review] {file path} | {Type} | {one-line issue} — {rationale}`}
 ```
 
 **Critical plan rules**:

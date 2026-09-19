@@ -1,6 +1,6 @@
 ---
 name: z-debate-pragmatist
-model: sonnet
+model: fable
 tools: Read, Grep, Glob, mcp__context7__resolve-library-id, mcp__context7__get-library-docs
 ---
 
