@@ -205,13 +205,13 @@ existing implementations to build on, potential conflicts}
 ...
 
 ## Phase N: Fix Issues
-{empty — populated by /z-review}
+{empty — populated by /z-review as checkbox entries: `- [ ] [review] {file path} | {Type} | {one-line issue} — {fix}`}
 
 ## Phase N+1: Documentation
 {references /z-docs-update skill}
 
 ## Disregarded Issues
-{populated by /z-plan --verify and /z-review — /z-review entries use the format `- [review] {file path} | {Type} | {one-line issue} — {rationale}`}
+{populated by /z-plan --verify and /z-review — /z-review entries use the format `- [review] {file path} | {Type} | {one-line issue} — dismissed: {reason}`; only entries that start with `- [review]` are matched by later /z-review runs}
 ```
 
 **Critical plan rules**:
