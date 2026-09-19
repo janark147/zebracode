@@ -67,7 +67,7 @@ Any unchecked must-have is automatically flagged as a review issue with **Severi
 
 **Ask before a large run:** If there is more than one group, show the planned maximum number of agent runs (groups × 3 agents × up to 3 passes, plus up to groups × 3 verification runs) and ask via **AskUserQuestion**: "Run up to 3 passes (recommended)" / "Limit to 2 passes" / "Limit to 1 pass".
 
-**Spawn only the named agents:** Spawn reviewers only as the `z-reviewer-*` agent types, which restrict them to read-only tools. If those agent types are not available, STOP and tell the user to run `install.sh` — do not fall back to a general-purpose agent.
+**Spawn only the named agents:** Spawn reviewers only as the `z-reviewer-*` agent types, which restrict them to read-only tools. Before spawning, confirm that `z-reviewer-quality`, `z-reviewer-security`, and `z-reviewer-performance` appear in the Task tool's list of available agent types — a spawn that succeeds is not proof that the definition loaded. If they are not available, STOP and tell the user to run `install.sh` and restart Claude Code — do not fall back to a general-purpose agent.
 
 Spawn all review agent instances in parallel using the Task tool. Every prompt starts with the line `Mode: first pass`, followed by:
 - The paths of the files in its group and the path of the group's diff file. The paths of all other changed files are listed as context only — the instance reviews only its own group
