@@ -11,7 +11,7 @@ required-config:
 
 # /z-review — Multi-Agent Code Review
 
-Comprehensive code review with 3 parallel review agents, optional 3-agent debate ring, must-haves audit, and structured issue tracking.
+Comprehensive code review with 3 parallel review agents (one instance per file group on large diffs, up to 3 passes), optional 3-agent debate ring, must-haves audit, and structured issue tracking.
 
 **This skill is READ-ONLY.** Do not modify code, run tests, or run build commands.
 
@@ -55,14 +55,16 @@ Before spawning review agents, verify all must-haves across ALL implemented phas
 
 Any unchecked must-have is automatically flagged as a review issue with **Severity: Critical**. These are prepended to the consolidated findings table and **cannot be dismissed by the user**.
 
-### Step 3: Spawn Review Agents (3 in parallel)
+### Step 3: Spawn Review Agents (in parallel, up to 3 passes)
 
 **Load stack-specific review checklists first:**
 - Check `stack.framework` from config → if `references/review-stack-{framework}.md` exists (e.g., `review-stack-laravel.md`), Read it.
 - Check `stack.frontend` from config → if set and `references/review-stack-{frontend}.md` exists (e.g., `review-stack-jquery.md`), Read it too.
 
-Spawn all 3 review agents in parallel using the Task tool. Each agent receives:
-- The full branch diff
+**Split large diffs:** If the diff changes more than 10 files or more than 1,000 lines, split the changed files into groups of at most 8 files and about 800 changed lines each. Keep files from the same directory or feature in the same group. Spawn one instance of each of the 3 review agents per group. A smaller diff is one group.
+
+Spawn all review agent instances in parallel using the Task tool. Each instance receives:
+- The diff of its file group, plus the paths of all other changed files (it can Read them for context, but it reviews only its own group)
 - Stack info from `z-project-config.yml`
 - Stack-specific review checklist (from references/ above — if loaded)
 - Project conventions from CLAUDE.md
@@ -87,19 +89,39 @@ Spawn all 3 review agents in parallel using the Task tool. Each agent receives:
 | Q-001 | Missing error handling | Quality | Medium | api.ts:42 | 85% | Wrap in try-catch |
 ```
 
-**Consolidation rules for all agents:**
-- Merge similar issues: same pattern in 3+ places → report once with "and N other locations"
+**Every agent MUST also return a coverage table** with one row per file in its group:
+
+```markdown
+| File | Focus areas with findings | Focus areas checked, none found | Not applicable |
+|------|---------------------------|---------------------------------|----------------|
+| api.ts | Error handling (Q-001) | Correctness, Architecture, Conventions | UI quality |
+```
+
+If a file from the agent's group is missing from its coverage table, spawn that agent again for the missing files only.
+
+**Rules for all agents:**
+- Check every file in the group against every focus area. Do not stop after a few findings — there is no limit on the number of findings
+- Merge similar issues: same pattern in 3+ places → report once and list every `file:line` where it occurs
 - Skip unchanged code (unless Critical severity)
 - No noise: no style preferences, subjective opinions, or "nice to have" improvements
 - Every finding MUST have `file:line` — findings without citations are invalid and discarded
 - Verify before reporting: re-read the cited lines. Discard a finding only if the re-read shows the claim is false. If the claim could be true but you cannot confirm it, keep the finding and lower its Confidence
 - Confidence is the agent's certainty after that re-read. It is shown to the user and is never used to drop a finding — the user decides
 
+**Follow-up passes:** One pass misses real issues, and which ones it misses differs per pass. After the first pass completes:
+
+1. Merge the findings of all instances into one list
+2. Spawn new instances of the same agents for the same file groups (new instances, not continuations of the previous ones). In addition to the inputs above, each receives the merged findings list for its group and its previous coverage table, with the instruction: "These issues are already found. Do not repeat them. Find the issues that were missed. Go through every file and focus area again, starting with the cells recorded as 'checked, none found'."
+3. A finding is new if no finding in the merged list has the same file + Type + underlying problem. Add new findings to the merged list
+4. Do not spawn an agent instance again once it has returned a pass with no new findings
+5. Repeat until no instance returns a new finding, or 3 passes in total have run
+6. Record the number of new findings per pass for the completion screen
+
 ### Step 4: Consolidate Findings
 
-After all agents complete:
+After all passes complete:
 
-1. Merge all agent output tables into one consolidated table. Keep every finding regardless of Confidence or Severity
+1. Merge all agent output tables from all passes into one consolidated table and renumber IDs sequentially per prefix (Q-, S-, P-). Keep every finding regardless of Confidence or Severity
 2. Prepend must-have failures from Step 2 (Severity: Critical, auto-included)
 3. Check "Fix Issues" and "Disregarded Issues" sections in the plan — do not re-flag already listed items. Match on file path + Type + the same underlying problem. Ignore IDs and line numbers — IDs restart every run and line numbers shift
 4. Sort by Severity: Critical → High → Medium → Low
@@ -161,6 +183,7 @@ For each phase that has review findings, append summary lines to that phase's `#
 |---|---|
 | **Must-haves** | {verified}/{total} |
 | **Issues found** | {N} (Q:{n} S:{n} P:{n}) |
+| **Review passes** | {passes} *(new findings per pass: {n1} / {n2} / {n3})* |
 | **To fix** | {M} *(added to Fix Issues phase)* |
 | **Dismissed** | {D} |
 

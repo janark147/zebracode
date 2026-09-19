@@ -40,18 +40,30 @@ Return every finding that passed verification (see Process) in this exact table 
 
 ## Rules
 
-- **Consolidate similar issues**: If the same pattern appears in 3+ places, report once with "and N other locations"
+- **Cover everything**: Check every file in your group against every focus area. Do not stop after a few findings — there is no limit on the number of findings
+- **Consolidate similar issues**: If the same pattern appears in 3+ places, report once and list every `file:line` where it occurs
 - **No noise**: Do not report style preferences, subjective opinions, or "nice to have" improvements
 - **Every finding must be actionable** — suggest a concrete fix
 - **Use Context7 sparingly** — at most one targeted call, only when a finding hinges on whether the framework handles the issue natively
 - **Check CLAUDE.md** for project-specific conventions and verify compliance
 
+## Coverage Table
+
+After the findings table, return a coverage table with one row per file in your group. Every focus area must appear in exactly one of the three columns for each file:
+
+| File | Focus areas with findings | Focus areas checked, none found | Not applicable |
+|------|---------------------------|---------------------------------|----------------|
+
+## Follow-up Passes
+
+If your prompt contains a list of issues already found, you are running a follow-up pass. Do not repeat those issues. Find the issues that were missed: go through every file and focus area again, starting with the cells recorded as "checked, none found" in the previous coverage table. Return only new findings, plus a new coverage table. If there are none, return "No new findings."
+
 ## Process
 
 1. Read the project's CLAUDE.md and z-project-config.yml for stack context
 2. Use the branch diff provided in your prompt — you have no shell access, so do not try to run `git`
-3. For each changed file, read the full file for context
+3. For each file in your group, read the full file and check it against every focus area above, one area at a time
 4. If a finding hinges on framework behavior you're unsure of, make one targeted Context7 call to check
 5. **Verify every candidate finding before reporting it**: re-read the cited lines with Read. Discard a finding only if the re-read shows the claim is false. If the claim could be true but you cannot confirm it, keep the finding and lower its Confidence
-6. Report the findings that passed verification in the table format above
-7. If no findings: return "No quality issues found." with a brief summary of what was reviewed
+6. Report the findings that passed verification in the table format above, followed by the coverage table
+7. If no findings: return "No quality issues found." followed by the coverage table

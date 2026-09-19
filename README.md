@@ -357,7 +357,7 @@ The `settings.json.example` file contains the complete hooks configuration. Key 
 
 ### Multi-agent review timeout
 
-- `/z-review` spawns up to 6 agents — this takes time
+- `/z-review` runs its 3 review agents for up to 3 passes, with one instance per file group on large diffs, plus 3 optional debate agents — this takes time
 - Ensure `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` is set to `"1"` in settings.json env
 - If agents fail to spawn, check Claude Code version supports agent teams
 
