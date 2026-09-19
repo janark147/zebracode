@@ -106,7 +106,7 @@ If a file from the agent's group is missing from its coverage table, spawn that 
 - No noise: no style preferences, subjective opinions, or "nice to have" improvements
 - Every finding MUST have `file:line` — findings without citations are invalid and discarded
 - Verify before reporting: re-read the cited lines. Discard a finding only if the re-read shows the claim is false. If the claim could be true but you cannot confirm it, keep the finding and lower its Confidence
-- Confidence is the agent's certainty after that re-read. It is shown to the user and is never used to drop a finding — the user decides
+- Confidence is the agent's certainty after that re-read. A finding is never dropped because of its Confidence — findings below 70% go to the verification step in Step 4
 
 **Follow-up passes:** One pass misses real issues, and which ones it misses differs per pass. After the first pass completes:
 
@@ -124,7 +124,11 @@ After all passes complete:
 1. Merge all agent output tables from all passes into one consolidated table and renumber IDs sequentially per prefix (Q-, S-, P-). Keep every finding regardless of Confidence or Severity
 2. Prepend must-have failures from Step 2 (Severity: Critical, auto-included)
 3. Check "Fix Issues" and "Disregarded Issues" sections in the plan — do not re-flag already listed items. Match on file path + Type + the same underlying problem. Ignore IDs and line numbers — IDs restart every run and line numbers shift
-4. Sort by Severity: Critical → High → Medium → Low
+4. **Verify low-confidence findings**: For every remaining finding with Confidence below 70%, spawn a new instance of the review agent with the matching ID prefix in verification mode (one instance per agent type per file group, in parallel — not the instance that reported the finding). Each receives its findings, the diff of the file group, and the instruction: "You are running in verification mode." Apply the verdicts:
+   - **CONFIRMED** → keep the finding, set Confidence to the revised value, append "(verified)"
+   - **REFUTED** → remove the finding from the table and add it to a "Refuted after verification" list with the evidence `file:line`. Show this list below the table so the user can overrule a verdict
+   - **UNCERTAIN** → keep the finding, append "(could not verify: {what is missing})" to its Confidence
+5. Sort by Severity: Critical → High → Medium → Low
 
 ### Step 5: Debate Ring (Optional)
 
@@ -184,6 +188,7 @@ For each phase that has review findings, append summary lines to that phase's `#
 | **Must-haves** | {verified}/{total} |
 | **Issues found** | {N} (Q:{n} S:{n} P:{n}) |
 | **Review passes** | {passes} *(new findings per pass: {n1} / {n2} / {n3})* |
+| **Verified** | {V} findings below 70% confidence *(confirmed {c} · refuted {r} · uncertain {u})* |
 | **To fix** | {M} *(added to Fix Issues phase)* |
 | **Dismissed** | {D} |
 

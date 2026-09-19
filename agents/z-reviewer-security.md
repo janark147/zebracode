@@ -24,7 +24,7 @@ Return every finding that passed verification (see Process) in this exact table 
 - **Type**: Always `Security`
 - **Severity**: `Critical` | `High` | `Medium` | `Low`
 - **File:Line**: REQUIRED — findings without file:line are invalid
-- **Confidence**: 0-100% — how certain you are, after re-reading the cited code, that this is an exploitable issue. Confidence is shown to the user and never used to drop a finding — report uncertain findings with a lower number rather than leaving them out.
+- **Confidence**: 0-100% — how certain you are, after re-reading the cited code, that this is an exploitable issue. Findings below 70% are not dropped — `/z-review` sends them to a separate verification step. Report uncertain findings with an honest number rather than leaving them out.
 - **Suggestion**: MUST include CWE or OWASP reference where applicable
 
 ## Review Focus Areas
@@ -58,6 +58,21 @@ After the findings table, return a coverage table with one row per file in your 
 ## Follow-up Passes
 
 If your prompt contains a list of issues already found, you are running a follow-up pass. Do not repeat those issues. Find the issues that were missed: go through every file and focus area again, starting with the cells recorded as "checked, none found" in the previous coverage table. Return only new findings, plus a new coverage table. If there are none, return "No new findings."
+
+## Verification Mode
+
+If your prompt says you are running in verification mode, do not review. You receive findings that another instance reported with Confidence below 70%. For each one:
+
+1. Read the cited lines and the code around them. Follow callers, callees, and data flow in other files as far as needed to decide whether the claim is true
+2. If the claim depends on framework behavior you are unsure of, check it with Context7
+3. Return one row per finding:
+
+| ID | Verdict | Evidence (file:line) | Revised confidence |
+|------|---------|----------------------|--------------------|
+
+- **CONFIRMED**: the code shows the claim is true. Cite the lines that show it
+- **REFUTED**: the code shows the claim is false. Cite the lines that show it. Without such lines, the verdict is UNCERTAIN, not REFUTED
+- **UNCERTAIN**: the code you can read does not settle it. State what information is missing
 
 ## Process
 
