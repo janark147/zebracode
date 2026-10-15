@@ -11,7 +11,7 @@ required-config:
 
 # /z-review — Multi-Agent Code Review
 
-Comprehensive code review with 3 parallel review agents (one instance per file group on large diffs, up to 3 passes), optional 3-agent debate ring, must-haves audit, and structured issue tracking.
+Comprehensive code review with 3 parallel review agents (one instance per file group on large diffs, 2 passes by default, a third only when the second still finds many issues), optional 3-agent debate ring, must-haves audit, and structured issue tracking.
 
 **This skill is READ-ONLY.** Do not modify code, run tests, or run build commands.
 
@@ -55,7 +55,7 @@ Before spawning review agents, verify all must-haves across ALL implemented phas
 
 Any unchecked must-have is automatically flagged as a review issue with **Severity: Critical**. These are prepended to the consolidated findings table and **cannot be dismissed by the user**.
 
-### Step 3: Spawn Review Agents (in parallel, up to 3 passes)
+### Step 3: Spawn Review Agents (in parallel, 2 passes by default)
 
 **Stack-specific review checklists:**
 - Check `stack.framework` from config → if `references/review-stack-{framework}.md` exists (e.g., `review-stack-laravel.md`), note its path.
@@ -65,7 +65,7 @@ Any unchecked must-have is automatically flagged as a review issue with **Severi
 
 **Write the diffs to files:** Agents receive paths, not file contents. For each group run `git diff {target_branch}...HEAD -- {group files} > .claude/.local/{branch}-review-g{n}.diff`, and write the full diff to `.claude/.local/{branch}-review-full.diff`. `.claude/.local/` is gitignored scratch space; writing there does not break the READ-ONLY rule.
 
-**Ask before a large run:** If there is more than one group, show the planned maximum number of agent runs (groups × 3 agents × up to 3 passes, plus up to groups × 3 verification runs) and ask via **AskUserQuestion**: "Run up to 3 passes (recommended)" / "Limit to 2 passes" / "Limit to 1 pass".
+**Ask before a large run:** If there is more than one group, show the planned number of agent runs (groups × 3 agents × 2 passes, plus up to groups × 3 verification runs, plus groups × 3 if a third pass is triggered) and ask via **AskUserQuestion**: "2 passes, third only if pass 2 finds more than 5 new issues (recommended)" / "Limit to 2 passes" / "Limit to 1 pass".
 
 **Spawn only the named agents:** Spawn reviewers only as the `z-reviewer-*` agent types, which restrict them to read-only tools. Before spawning, confirm that `z-reviewer-quality`, `z-reviewer-security`, and `z-reviewer-performance` appear in the Task tool's list of available agent types — a spawn that succeeds is not proof that the definition loaded. If they are not available, STOP and tell the user to run `install.sh` and restart Claude Code — do not fall back to a general-purpose agent.
 
@@ -118,7 +118,7 @@ If a file of the group, or a focus area in a file's row, is missing from an agen
 3. For every agent type × file group that is not finished (rule 5), spawn a new instance (not a continuation of the previous one). Its prompt starts with the line `Mode: follow-up pass` and gives the same inputs as the first pass, plus: the merged findings of its group (ID, Issue, Severity, File:Line), that agent type's latest coverage table and discarded-candidates list for the group, and the next free ID number
 4. A returned finding is new if no finding in the merged list has the same file + underlying problem. Add new findings to the merged list and apply rule 1. If a returned finding matches a listed one but has a higher Severity or a more exact location, update the listed finding; this does not count as new
 5. An agent type is finished for a file group once it has completed a pass — the first pass included — with zero new findings as judged by rule 4
-6. Repeat until every agent type × file group is finished, or 3 passes in total (or the limit the user chose) have run
+6. Run 2 passes by default. Run a third pass for a file group only if pass 2 found more than 5 new findings for that group (all agent types together) and the user did not choose a lower limit. Never run more than 3 passes. Measured on a 210-line diff: pass 2 found 22 new issues, pass 3 found 5 at twice the cost per issue
 7. Keep only the latest coverage table per agent type and file group. Record the number of new findings per pass for the completion screen
 
 ### Step 4: Consolidate Findings

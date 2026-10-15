@@ -357,7 +357,7 @@ The `settings.json.example` file contains the complete hooks configuration. Key 
 
 ### Multi-agent review timeout
 
-- `/z-review` runs its 3 review agents for up to 3 passes, with one instance per file group on large diffs, then a verification round for findings below 70% confidence, plus 3 optional debate agents — this takes time
+- `/z-review` runs its 3 review agents for 2 passes (a third only when pass 2 still finds more than 5 new issues), with one instance per file group on large diffs, then a verification round for findings below 70% confidence, plus 3 optional debate agents — this takes time
 - All agents use the `opus` model alias, which resolves to the current Opus model. To use a different model, change `model:` in `~/.claude/agents/z-*.md`
 - If `/z-review` or `/z-debug` reports that its agent types are not available, run `claude --debug` and look for skipped files in `~/.claude/agents/` — every agent file needs both `name` and `description` in its frontmatter
 - Ensure `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` is set to `"1"` in settings.json env
