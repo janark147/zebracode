@@ -11,7 +11,7 @@ required-config:
 
 # /z-review — Multi-Agent Code Review
 
-Comprehensive code review with 3 parallel review agents (one instance per file group on large diffs, 2 passes by default, a third only when the second still finds many issues), optional 3-agent debate ring, must-haves audit, and structured issue tracking.
+Comprehensive code review with 3 parallel review agents (every reviewer sees the whole diff; 2 passes by default, a third only when the second still finds many issues), optional 3-agent debate ring, must-haves audit, and structured issue tracking.
 
 **This skill is READ-ONLY.** Do not modify code, run tests, or run build commands.
 
@@ -61,17 +61,16 @@ Any unchecked must-have is automatically flagged as a review issue with **Severi
 - Check `stack.framework` from config → if `references/review-stack-{framework}.md` exists (e.g., `review-stack-laravel.md`), note its path.
 - Check `stack.frontend` from config → if set and `references/review-stack-{frontend}.md` exists (e.g., `review-stack-jquery.md`), note its path too.
 
-**Split large diffs:** Count changed lines (added + removed) with `git diff --stat`; the number of files does not matter. If the diff has 2,000 changed lines or fewer, it is one group. Above that, split the changed files into groups of about 1,500 changed lines each, keeping files from the same directory or feature together. A single file above 1,500 changed lines forms its own group. Most branches are one group, which means 3 reviewer runs per pass. Leave deleted, binary, lock, and generated files out of the thresholds and out of the groups; give their paths to the agents as context only. A smaller diff is one group. Each group gets one instance of each of the 3 review agents.
+**Every reviewer sees the whole diff.** The diff is never split: a change in one file can be incompatible with a change in another, and a reviewer that sees only part of the branch cannot find that. One instance of each of the 3 review agents reviews the whole branch. Deleted, binary, lock, and generated files are listed to the agents as context paths only.
 
-**Write the diffs to files:** Agents receive paths, not file contents. For each group run `git diff {target_branch}...HEAD -- {group files} > .claude/.local/{branch}-review-g{n}.diff`, and write the full diff to `.claude/.local/{branch}-review-full.diff`. `.claude/.local/` is gitignored scratch space; writing there does not break the READ-ONLY rule.
+**Write the diff to a file:** Agents receive paths, not file contents. Run `git diff {target_branch}...HEAD > .claude/.local/{branch}-review.diff`. `.claude/.local/` is gitignored scratch space; writing there does not break the READ-ONLY rule.
 
-**Ask before a large run:** If there is more than one group, show the planned number of agent runs (groups × 3 agents × 2 passes, plus up to groups × 3 verification runs, plus groups × 3 if a third pass is triggered) and ask via **AskUserQuestion**: "2 passes, third only if pass 2 finds more than 5 new issues (recommended)" / "Limit to 2 passes" / "Limit to 1 pass".
+**Warn before a very large run:** If the diff has more than 5,000 changed lines (added + removed, from `git diff --stat`), say so and ask via **AskUserQuestion** whether to review the whole branch anyway or stop so the user can review it in smaller branches or by phase. Each pass is 3 reviewer runs, so a 2-pass review is 6 runs plus up to 3 verification runs.
 
 **Spawn only the named agents:** Spawn reviewers only as the `z-reviewer-*` agent types, which restrict them to read-only tools. Before spawning, confirm that `z-reviewer-quality`, `z-reviewer-security`, and `z-reviewer-performance` appear in the Task tool's list of available agent types — a spawn that succeeds is not proof that the definition loaded. If they are not available, STOP and tell the user to run `install.sh` and restart Claude Code — do not fall back to a general-purpose agent.
 
 Spawn all review agent instances in parallel using the Task tool. Every prompt starts with the line `Mode: first pass`, followed by:
-- The paths of the files in its group and the path of the group's diff file. The paths of all other changed files are listed as context only — the instance reviews only its own group
-- For `z-reviewer-security` only: the path of the full diff, for tracing flows that cross groups
+- The path of the diff file and the paths of all changed files
 - The paths of `z-project-config.yml`, the stack-specific checklist (if any), CLAUDE.md, DOCS.md, `project-patterns.md`, and the plan file (requirements context). The agent Reads what it needs
 - Instructions to use Context7 sparingly: at most one targeted call, only to verify a specific framework-native protection a finding hinges on (suppress false positives)
 
@@ -91,7 +90,7 @@ Spawn all review agent instances in parallel using the Task tool. Every prompt s
 | Q-001 | Missing error handling | Quality | Medium | api.ts:42 | 85% | Wrap in try-catch |
 ```
 
-**Every agent MUST also return a coverage table** with one row per file in its group. Every focus area of that agent appears in exactly one of the three columns, and every "Not applicable" entry gives a reason:
+**Every agent MUST also return a coverage table** with one row per changed file. Every focus area of that agent appears in exactly one of the three columns, and every "Not applicable" entry gives a reason:
 
 ```markdown
 | File | Focus areas with findings | Focus areas checked, none found | Not applicable |
@@ -99,10 +98,10 @@ Spawn all review agent instances in parallel using the Task tool. Every prompt s
 | api.ts | Error handling (Q-001) | Correctness, Architecture, Conventions, Code clarity, Leftover artifacts, Type safety, DOCS.md / CLAUDE.md compliance | UI quality — no frontend code in this file |
 ```
 
-If a file of the group, or a focus area in a file's row, is missing from an agent's coverage table, spawn that agent once more for the missing files with the same inputs. This does not count as a pass. If rows are still missing after that, list the files as "not covered" on the completion screen.
+If a changed file, or a focus area in a file's row, is missing from an agent's coverage table, spawn that agent once more for the missing files with the same inputs. This does not count as a pass. If rows are still missing after that, list the files as "not covered" on the completion screen.
 
 **Rules for all agents:**
-- Check every file in the group against every focus area. Do not stop after a few findings — there is no limit on the number of findings
+- Check every changed file against every focus area, and check whether changes in different files are consistent with each other (interfaces, call sites, data shapes, configuration). Do not stop after a few findings — there is no limit on the number of findings
 - Merge similar issues: same pattern in 3+ places → report once and list every `file:line` where it occurs
 - Skip unchanged code (unless Critical severity)
 - No noise: no style preferences, subjective opinions, or "nice to have" improvements
@@ -115,11 +114,11 @@ If a file of the group, or a focus area in a file's row, is missing from an agen
 
 1. Merge the findings of all instances into one list. If two findings — from the same agent or from different agents — have the same file and the same underlying problem, merge them into one row: keep the higher Severity, the more specific description, every `file:line`, and both IDs and Types. Then renumber IDs sequentially per prefix (Q-, S-, P-)
 2. Move findings that match a plan entry to the "Already in plan" list, using the rules of Step 4.3. An agent that re-finds only issues already handled in the plan has then found nothing new
-3. For every agent type × file group that is not finished (rule 5), spawn a new instance (not a continuation of the previous one). Its prompt starts with the line `Mode: follow-up pass` and gives the same inputs as the first pass, plus: the merged findings of its group (ID, Issue, Severity, File:Line), that agent type's latest coverage table and discarded-candidates list for the group, and the next free ID number
+3. For every agent type that is not finished (rule 5), spawn a new instance (not a continuation of the previous one). Its prompt starts with the line `Mode: follow-up pass` and gives the same inputs as the first pass, plus: the merged findings (ID, Issue, Severity, File:Line), that agent type's latest coverage table and discarded-candidates list, and the next free ID number
 4. A returned finding is new if no finding in the merged list has the same file + underlying problem. Add new findings to the merged list and apply rule 1. If a returned finding matches a listed one but has a higher Severity or a more exact location, update the listed finding; this does not count as new
-5. An agent type is finished for a file group once it has completed a pass — the first pass included — with zero new findings as judged by rule 4
-6. Run 2 passes by default. Run a third pass for a file group only if pass 2 found more than 5 new findings for that group (all agent types together) and the user did not choose a lower limit. Never run more than 3 passes. Measured on a 210-line diff: pass 2 found 22 new issues, pass 3 found 5 at twice the cost per issue
-7. Keep only the latest coverage table per agent type and file group. Record the number of new findings per pass for the completion screen
+5. An agent type is finished once it has completed a pass — the first pass included — with zero new findings as judged by rule 4
+6. Run 2 passes by default. Run a third pass only if pass 2 found more than 5 new findings (all agent types together). Never run more than 3 passes. Measured on a 210-line diff: pass 2 found 22 new issues, pass 3 found 5 at twice the cost per issue
+7. Keep only the latest coverage table per agent type. Record the number of new findings per pass for the completion screen
 
 ### Step 4: Consolidate Findings
 
@@ -130,7 +129,7 @@ After all passes complete:
 3. **Already in plan**: Compare the remaining findings with the plan's "Fix Issues" and "Disregarded Issues" sections. Only entries that start with `- [review]`, `- [ ] [review]`, or `- [x] [review]` take part. Match on file path + the same underlying problem. Ignore IDs, Types, and line numbers — IDs restart every run, Types depend on which agent reported, and line numbers shift
    - Match with a Disregarded entry or an unchecked (`- [ ]`) Fix Issues entry → move the finding to an "Already in plan" list together with the matching entry, and show that list below the table. Exception: a Critical or High finding stays in the table, marked "(previously dismissed)"
    - Match with a checked (`- [x]`) Fix Issues entry → keep the finding in the table, marked "(previously fixed — recurred)"
-4. **Verify low-confidence findings**: For every remaining finding with Confidence below 70% and Severity Medium or higher, spawn a new instance of the review agent with the matching ID prefix (one instance per agent type per file group, in parallel — never the instance that reported the finding). Its prompt starts with the line `Mode: verification` and gives: the full rows of its findings, the paths of the group's files and diff file, and the paths of CLAUDE.md, DOCS.md, `project-patterns.md`, and the plan file. Apply the verdicts:
+4. **Verify low-confidence findings**: For every remaining finding with Confidence below 70% and Severity Medium or higher, spawn a new instance of the review agent with the matching ID prefix (one instance per agent type, in parallel — never the instance that reported the finding). Its prompt starts with the line `Mode: verification` and gives: the full rows of its findings, the paths of the changed files and the diff file, and the paths of CLAUDE.md, DOCS.md, `project-patterns.md`, and the plan file. Apply the verdicts:
    - **CONFIRMED** → keep the finding. Apply the revised Confidence, and the revised Severity or File:Line if the verifier corrected them. Append "(independently verified)"
    - **REFUTED** → valid only if the evidence is code, configuration, or instruction text on the path of the claim. Comments, strings, documentation, and test names are not evidence; treat such a verdict as UNCERTAIN. A Critical or High finding is never removed: keep it in the table marked "(disputed: {evidence file:line})". Move other refuted findings to a "Refuted after verification" list with the evidence `file:line`, and show that list below the table
    - **UNCERTAIN** → keep the finding, show the revised Confidence, append "(could not verify: {what is missing})"
