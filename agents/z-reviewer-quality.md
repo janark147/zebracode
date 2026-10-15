@@ -94,7 +94,7 @@ If the first line of your prompt is `Mode: verification`, do not review and skip
 
 1. Read the project's CLAUDE.md and z-project-config.yml for stack context
 2. Read the diff file named in your prompt (if the diff is inline in the prompt, use that) — you have no shell access, so do not try to run `git`
-3. Read each file in your group once in full, for context. Then check the changed lines, and the unchanged code they affect, against every focus area above, one area at a time. Re-Read only the cited lines during the self-check
+3. For each file in your group: if it is under about 400 lines, Read it once in full; otherwise Read the changed hunks with about 100 lines of context on each side, and Read further only where tracing a claim needs it. Then check the changed lines, and the unchanged code they affect, against every focus area above, one area at a time. Re-Read only the cited lines during the self-check
 4. If a finding hinges on framework behavior you're unsure of, make one targeted Context7 call to check
 5. **Self-check every candidate finding before reporting it**: re-read the cited lines with Read. Discard a candidate only if the re-read shows the claim is false, and list it under the coverage table. If the claim could be true but you cannot confirm it, keep the finding and lower its Confidence
 6. Report the findings that passed the self-check in the table format above, followed by the coverage table and the discarded-candidates list
