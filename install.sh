@@ -146,8 +146,9 @@ else
     ok "Backup saved to settings.json${BACKUP_SUFFIX}"
 
     # Extract hooks/env/permission rules from example and merge into existing settings
-    # jq's * operator does deep merge — user-added hook events and env vars are preserved
-    # Permission rules are added to the user's lists, never replacing them
+    # Each example hook entry is added to its event's list unless its command is already there,
+    # so the user's own hooks on the same events are kept (jq's * would replace the whole list)
+    # Env vars are deep-merged; permission rules are added to the user's lists, never replacing them
     EXAMPLE_HOOKS=$(jq '.hooks // {}' "$EXAMPLE_FILE")
     EXAMPLE_ENV=$(jq '.env // {}' "$EXAMPLE_FILE")
     EXAMPLE_DENY=$(jq '.permissions.deny // []' "$EXAMPLE_FILE")
@@ -159,7 +160,10 @@ else
        --argjson deny "$EXAMPLE_DENY" \
        --argjson ask "$EXAMPLE_ASK" \
        --argjson retired "$RETIRED" \
-       '.hooks = (.hooks // {} | . * $hooks)
+       '.hooks = (reduce ($hooks | to_entries[]) as $event (.hooks // {};
+            .[$event.key] = ((.[$event.key] // []) as $mine
+              | [$mine[].hooks[]?.command] as $have
+              | $mine + [$event.value[] | select([.hooks[]?.command] | any(. as $c | $have | index($c)) | not)])))
         | .hooks |= with_entries(.value |= map(select(
             [.hooks[]?.command // "" | split("/") | last] | any(. as $c | $retired | index($c)) | not)))
         | .hooks |= with_entries(select(.value | length > 0))
