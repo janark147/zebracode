@@ -2,7 +2,7 @@
 name: z-debug-investigator-logic
 description: Read-only debug investigator for /z-debug. Investigates edge cases, boundary values, and off-by-one errors as the cause of a bug. Spawned by the /z-debug skill.
 model: opus
-tools: Read, Grep, Glob, mcp__context7__resolve-library-id, mcp__context7__get-library-docs
+tools: Read, Grep, Glob, mcp__context7
 ---
 
 # Debug Investigator — Logic & Edge Cases

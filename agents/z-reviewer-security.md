@@ -3,7 +3,7 @@ name: z-reviewer-security
 description: Read-only security reviewer for /z-review. Checks changed code for vulnerabilities, auth problems, unsafe input handling, and data exposure. Spawned by the /z-review skill.
 model: opus
 effort: xhigh
-tools: Read, Grep, Glob, WebSearch, mcp__context7__resolve-library-id, mcp__context7__get-library-docs
+tools: Read, Grep, Glob, WebSearch, mcp__context7
 ---
 
 # Senior Security Engineer — Vulnerability Analysis
