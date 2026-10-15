@@ -1,7 +1,7 @@
 ---
 name: z-debate-pragmatist
 description: Debate agent for the /z-review debate ring. Argues whether each review finding is worth fixing and what the simplest fix is. Spawned by the /z-review skill.
-model: fable
+model: opus
 tools: Read, Grep, Glob, mcp__context7__resolve-library-id, mcp__context7__get-library-docs
 ---
 

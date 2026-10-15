@@ -206,17 +206,17 @@ ZebraCode includes 10 custom agent definitions for multi-agent workflows.
 
 | Agent | Focus | Model |
 |-------|-------|-------|
-| `z-reviewer-quality` | Code quality, patterns, maintainability | Fable |
-| `z-reviewer-security` | Security vulnerabilities, OWASP, data exposure | Fable |
-| `z-reviewer-performance` | Performance bottlenecks, N+1 queries, caching | Fable |
+| `z-reviewer-quality` | Code quality, patterns, maintainability | Opus |
+| `z-reviewer-security` | Security vulnerabilities, OWASP, data exposure | Opus |
+| `z-reviewer-performance` | Performance bottlenecks, N+1 queries, caching | Opus |
 
 ### Debate Agents (spawned by `/z-review` debate ring)
 
 | Agent | Personality | Model |
 |-------|-------------|-------|
-| `z-debate-pragmatist` | Practical, trade-off focused, ships features | Fable |
-| `z-debate-adversary` | Adversarial, edge-case hunter, worst-case thinker | Fable |
-| `z-debate-architect` | Big-picture, system design, long-term implications | Fable |
+| `z-debate-pragmatist` | Practical, trade-off focused, ships features | Opus |
+| `z-debate-adversary` | Adversarial, edge-case hunter, worst-case thinker | Opus |
+| `z-debate-architect` | Big-picture, system design, long-term implications | Opus |
 
 ### Debug Agents (spawned by `/z-debug`)
 
@@ -358,7 +358,7 @@ The `settings.json.example` file contains the complete hooks configuration. Key 
 ### Multi-agent review timeout
 
 - `/z-review` runs its 3 review agents for up to 3 passes, with one instance per file group on large diffs, then a verification round for findings below 70% confidence, plus 3 optional debate agents — this takes time
-- The review and debate agents use the `fable` model alias. If they fail to spawn or run on another model, check that `fable` is available to you, or change `model:` in `~/.claude/agents/z-reviewer-*.md` and `z-debate-*.md`
+- All agents use the `opus` model alias, which resolves to the current Opus model. To use a different model, change `model:` in `~/.claude/agents/z-*.md`
 - If `/z-review` or `/z-debug` reports that its agent types are not available, run `claude --debug` and look for skipped files in `~/.claude/agents/` — every agent file needs both `name` and `description` in its frontmatter
 - Ensure `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` is set to `"1"` in settings.json env
 - If agents fail to spawn, check Claude Code version supports agent teams

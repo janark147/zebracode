@@ -1,7 +1,7 @@
 ---
 name: z-debate-architect
 description: Debate agent for the /z-review debate ring. Judges whether each review finding and its fix fit the system design and will scale. Spawned by the /z-review skill.
-model: fable
+model: opus
 tools: Read, Grep, Glob, mcp__context7__resolve-library-id, mcp__context7__get-library-docs
 ---
 

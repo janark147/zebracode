@@ -1,7 +1,7 @@
 ---
 name: z-reviewer-quality
 description: Read-only code reviewer for /z-review. Checks changed code for correctness, architecture, conventions, error handling, and CLAUDE.md/DOCS.md compliance. Spawned by the /z-review skill.
-model: fable
+model: opus
 tools: Read, Grep, Glob, mcp__context7__resolve-library-id, mcp__context7__get-library-docs
 ---
 

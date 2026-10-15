@@ -1,7 +1,7 @@
 ---
 name: z-reviewer-security
 description: Read-only security reviewer for /z-review. Checks changed code for vulnerabilities, auth problems, unsafe input handling, and data exposure. Spawned by the /z-review skill.
-model: fable
+model: opus
 tools: Read, Grep, Glob, WebSearch, mcp__context7__resolve-library-id, mcp__context7__get-library-docs
 ---
 
