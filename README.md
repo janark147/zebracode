@@ -1,13 +1,13 @@
 # ZebraCode v1.4
 
-A structured workflow framework for [Claude Code](https://docs.anthropic.com/en/docs/claude-code). Brings opinionated, repeatable workflows to AI-assisted software development — with plans, phases, multi-agent reviews, session persistence, and automated quality gates.
+A structured workflow framework for [Claude Code](https://docs.anthropic.com/en/docs/claude-code). Brings opinionated, repeatable workflows to AI-assisted software development — with plans and phases that persist across sessions, multi-agent reviews, and automated quality gates.
 
 ### What makes it different
 
 | Principle | What it means |
 |-----------|---------------|
 | **Evidence-based verification** | Every skill that claims progress must show concrete proof — test counts, linter output, `file:line` citations. No bare checkmarks, no "it works." |
-| **Least-privileged tool access** | Review and debug agents get read-only tools (Read, Grep, Glob). Only the main session modifies code. Agents can't accidentally break things. |
+| **Least-privileged tool access** | Review and debug agents get read-only tools (Read, Grep, Glob, Context7 docs lookup). Only the main session modifies code. Agents can't accidentally break things. |
 | **Workflow state validation** | A Stop hook asks Claude to confirm before stopping with unchecked items in a started phase. Permission rules block edits to protected files and ask before destructive commands. |
 | **Decision enforcement** | Grooming decisions are categorized as Locked, Deferred, or Discretion. Locked decisions map to plan actions. Deferred items are never implemented unless re-categorized. |
 | **Persistent project patterns** | Conventions, pitfalls, and shortcuts discovered during work are recorded in `.claude/project-patterns.md` (with user approval) and retained across sessions and branches. |
@@ -24,7 +24,9 @@ A structured workflow framework for [Claude Code](https://docs.anthropic.com/en/
 - [Skill Reference](#skill-reference)
 - [Hook Reference](#hook-reference)
 - [Agent Reference](#agent-reference)
+- [Status Line](#status-line)
 - [Configuration](#configuration)
+- [File Structure](#file-structure)
 - [Troubleshooting](#troubleshooting)
 
 ---
@@ -36,23 +38,17 @@ A structured workflow framework for [Claude Code](https://docs.anthropic.com/en/
 | Tool | Purpose |
 |------|---------|
 | [Claude Code](https://docs.anthropic.com/en/docs/claude-code) | CLI agent (ZebraCode is a framework on top of it) |
-| `jq` | JSON parsing in hook scripts (`brew install jq`) |
+| `jq` 1.6+ | JSON parsing in hook scripts and the status line (`brew install jq`) |
 | `terminal-notifier` | Desktop notifications on macOS (`brew install terminal-notifier`) |
 | [Context7](https://github.com/upstash/context7) MCP | Framework/library documentation lookup (required by `/z-plan`, `/z-work`, `/z-review`) |
 
-### Recommended MCPs
+### Optional MCPs and tools
 
-| MCP | Purpose | Scope |
-|-----|---------|-------|
-| [Statusline](https://github.com/anthropics/claude-code-statusline) | Status bar showing branch, plan progress | Global |
-| [Serena](https://github.com/oraios/serena) | Semantic code retrieval/editing | Global |
-
-### Optional MCPs
-
-| MCP | Purpose | When needed |
+| MCP / tool | Purpose | When needed |
 |-----|---------|-------------|
 | Jira MCP | Issue tracker integration | Jira projects |
 | Laravel Boost | Enhanced Laravel support | Laravel projects |
+| [`ccusage`](https://github.com/ccusage/ccusage) | Weekly cost in the [status line](#status-line) | Leave it out to hide the weekly cost |
 
 ### Plugins
 
@@ -230,7 +226,34 @@ ZebraCode includes 10 custom agent definitions for multi-agent workflows.
 | `z-debug-investigator-integration` | API contracts, middleware, cross-service issues | Opus |
 | `z-debug-judge` | Synthesizes investigator reports, ranks hypotheses | Opus |
 
-All agents use **read-only tools** (Read, Grep, Glob) — they cannot modify files. Only the main Claude Code session makes changes.
+All agents use **read-only tools** — Read, Grep, Glob and the whole Context7 server (`mcp__context7`, so a renamed Context7 tool doesn't break them); the security reviewer also gets WebSearch. They cannot modify files. Only the main Claude Code session makes changes.
+
+The three reviewers run at `effort: xhigh`. The debate and debug agents use your session's effort level.
+
+---
+
+## Status Line
+
+`statusline.sh` (installed to `~/.claude/statusline.sh`) shows three lines:
+
+```
+📁 ~/code/my-app  🌿 TAL-1  🤖 Opus 5.5 · xhigh  📟 v2.1.300
+🧠 Context left: 79%  ⏳ 5h 36% (resets 20:30) · 7d 24% (resets Thu 22 Oct)  📋 Phase 3/8: API endpoints
+💰 $8.60  📅 $294.19 this week  💾 cache until 20:24
+```
+
+| Item | Source |
+|------|--------|
+| Directory, git branch | Branch of the folder Claude Code was started in |
+| Model · effort | Claude Code's current model and effort level |
+| Context left | Claude Code's own remaining percentage for the real window size (200k or 1M). `—` early in a session |
+| 5h / 7d | Claude subscription usage limits and their reset times. Hidden when Claude Code doesn't send them (API-key users) |
+| Phase X/Y | The plan for the current branch: the first `## Phase` with unchecked items, out of the last phase number |
+| Session cost | Claude Code's session cost estimate |
+| Weekly cost | `ccusage weekly`, refreshed in the background at most every 10 minutes (cached in `~/.claude/.statusline-weekly-cost.json`), because one `ccusage` run takes about 20 seconds |
+| Cache | When the prompt cache expires. After that, the next message re-sends the whole context at full price |
+
+The script reads all input with one `jq` call and takes about 0.1 seconds. Claude Code cancels a status line run when a new update arrives, so a slow script leaves old values on screen.
 
 ---
 
@@ -283,7 +306,7 @@ Also written by `/z-project-init`. Protected files are `deny` rules, dangerous c
 ### Global Instructions
 
 - **`~/.claude/CLAUDE.md`**: Framework behavior rules (plan usage, verification, debugging)
-- **`~/.claude/RULES.md`**: Actionable operational rules (task management, file safety, agent access)
+- **`~/.claude/RULES.md`**: Actionable operational rules (task management, when to ask the user instead of deciding, grooming decisions, agent access)
 
 ### Settings: `~/.claude/settings.json`
 
@@ -292,6 +315,9 @@ The `settings.json.example` file contains the complete configuration. Key settin
 - `attribution: false`: No AI co-author trailer, PR text or session link in commits and PRs (Claude Code v2.1.281+)
 - `permissions.deny`: `.env` files and lock files can't be edited in any project
 - `permissions.ask`: database wipe commands, force pushes and `git reset --hard` always ask first
+- `statusLine`: runs `~/.claude/statusline.sh` (see [Status Line](#status-line))
+
+Auto-mode settings (`autoMode`) are only read from `~/.claude/settings.json`, never from a project's settings files. Keep them general there, and put project-specific security facts (trusted domains, where secrets and personal data live) in the project's `CLAUDE.md`, which auto mode's safety check also reads.
 
 ---
 
@@ -308,7 +334,8 @@ The `settings.json.example` file contains the complete configuration. Key settin
 ├── agents/                # 10 agent definitions
 ├── hooks/                 # 3 hook scripts + lib/plan.sh
 ├── templates/             # Config templates
-└── statusline.sh          # Status bar script
+├── statusline.sh          # Status line script
+└── .statusline-weekly-cost.json   # ccusage result cache (only if ccusage is installed)
 ```
 
 ### Per-Project (`{project}/.claude/`)
@@ -358,6 +385,13 @@ The `settings.json.example` file contains the complete configuration. Key settin
 - Run `/permissions` to see which `deny` rule matched and which settings file it comes from
 - Global rules are in `~/.claude/settings.json`, project rules in `.claude/settings.json`
 - A deny rule can't be overridden by an allow rule — to edit a protected file intentionally, remove its rule temporarily, or edit the file yourself
+
+### Status line shows old or missing values
+
+- Time one run: `echo '{}' | ~/.claude/statusline.sh` should finish in well under a second. Claude Code cancels slow runs, which leaves old values on screen
+- `Context left: —` early in a session is expected — Claude Code sends no percentage until the first response
+- No weekly cost: install `ccusage`; the first value appears about 20 seconds after the first refresh
+- No phase: the plan must be `.claude/plans/{issue}.md` or `.claude/plans/{issue}-*.md`, where `{issue}` is the branch name after its last `/`, and it must use `## Phase <number>` headings
 
 ### Context lost after `/clear`
 
