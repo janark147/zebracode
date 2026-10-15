@@ -29,7 +29,7 @@ Return every finding that passed your self-check (see Process) in this exact tab
 - **Type**: Always `Performance`
 - **Severity**: `Critical` | `High` | `Medium` | `Low`
 - **File:Line**: REQUIRED — findings without file:line are invalid
-- **Confidence**: 0-100% — how certain you are, after re-reading the cited code, that this has a measurable cost. Findings below 70% are not dropped — `/z-review` sends them to independent verification by another instance. Report uncertain findings with an honest number rather than leaving them out.
+- **Confidence**: 0-100% — how certain you are, after re-reading the cited code, that this has a measurable cost. Findings below 70% are not dropped — `/z-review` sends those of Severity Medium or higher to independent verification by another instance, and shows Low ones marked "(unverified)". Report uncertain findings with an honest number rather than leaving them out.
 - **Suggestion**: MUST include impact assessment (e.g., "O(n) → O(1)", "saves N queries per request")
 
 ## Review Focus Areas
