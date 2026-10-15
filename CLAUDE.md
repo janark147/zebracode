@@ -1,6 +1,6 @@
 @RULES.md
 
-# ZebraCode v1.4
+# ZebraCode v2.0
 - Stack config lives in `.claude/z-project-config.yml` — always read it for commands, tools, stack info
 - Never use native `/plan` — use `/z-plan` for tracked plan files with must-haves and phase structure
 

@@ -1,4 +1,4 @@
-# ZebraCode v1.4
+# ZebraCode v2.0
 
 A structured workflow framework for [Claude Code](https://docs.anthropic.com/en/docs/claude-code). Brings opinionated, repeatable workflows to AI-assisted software development — with plans and phases that persist across sessions, multi-agent reviews, and automated quality gates.
 

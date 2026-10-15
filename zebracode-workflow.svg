@@ -2,7 +2,7 @@
   <rect width="800" height="1280" fill="#fff"/>
 
   <!-- Title -->
-  <text x="400" y="36" text-anchor="middle" font-size="22" font-weight="700" fill="#0f172a" letter-spacing="-0.5">ZebraCode v1.4</text>
+  <text x="400" y="36" text-anchor="middle" font-size="22" font-weight="700" fill="#0f172a" letter-spacing="-0.5">ZebraCode v2.0</text>
   <text x="400" y="56" text-anchor="middle" font-size="12" fill="#94a3b8">Standard Feature Workflow · each step separated by <tspan font-family="ui-monospace, monospace" fill="#64748b">/clear</tspan></text>
 
   <!-- Defs -->
@@ -312,5 +312,5 @@
   </g>
 
   <!-- Footer -->
-  <text x="400" y="1268" text-anchor="middle" font-size="10" fill="#cbd5e1">ZebraCode v1.4 · Claude Code Workflow Framework</text>
+  <text x="400" y="1268" text-anchor="middle" font-size="10" fill="#cbd5e1">ZebraCode v2.0 · Claude Code Workflow Framework</text>
 </svg>

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# ZebraCode v1.4 Installer
+# ZebraCode v2.0 Installer
 # Copies skills, agents, hooks, templates to ~/.claude/
 # Merges hooks into settings.json (preserves existing settings)
 
@@ -23,7 +23,7 @@ error() { echo -e "${RED}[ERROR]${NC} $1"; }
 
 echo ""
 echo "  ╔══════════════════════════════════╗"
-echo "  ║     ZebraCode v1.4 Installer     ║"
+echo "  ║     ZebraCode v2.0 Installer     ║"
 echo "  ╚══════════════════════════════════╝"
 echo ""
 
