@@ -1,8 +1,29 @@
 {
-  "env": {
-    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+  "attribution": false,
+  "permissions": {
+    "deny": [
+      "Edit(.env)",
+      "Edit(.env.*)",
+      "Edit(composer.lock)",
+      "Edit(package-lock.json)",
+      "Edit(yarn.lock)",
+      "Edit(pnpm-lock.yaml)"
+    ],
+    "ask": [
+      "Bash(*artisan migrate:fresh*)",
+      "Bash(*artisan migrate:reset*)",
+      "Bash(*artisan db:wipe*)",
+      "Bash(*manage.py flush*)",
+      "Bash(*manage.py reset_db*)",
+      "Bash(*db:drop*)",
+      "Bash(*db:reset*)",
+      "Bash(*db:schema:load*)",
+      "Bash(*db:purge*)",
+      "Bash(git push*--force*)",
+      "Bash(git push* -f*)",
+      "Bash(git reset*--hard*)"
+    ]
   },
-  "includeCoAuthoredBy": false,
   "hooks": {
     "SessionStart": [
       {
@@ -14,62 +35,12 @@
         ]
       }
     ],
-    "PostToolUse": [
-      {
-        "matcher": "Edit|Write|NotebookEdit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "~/.claude/hooks/format-on-edit.sh"
-          }
-        ]
-      },
-      {
-        "matcher": "Edit|Write",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "~/.claude/hooks/check-typescript-any.sh"
-          }
-        ]
-      }
-    ],
-    "PreToolUse": [
-      {
-        "matcher": "Edit|Write",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "~/.claude/hooks/block-protected-files.sh"
-          }
-        ]
-      },
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "~/.claude/hooks/block-destructive-commands.sh"
-          }
-        ]
-      }
-    ],
     "Stop": [
       {
         "hooks": [
           {
             "type": "command",
             "command": "~/.claude/hooks/verify-tasks-complete.sh"
-          }
-        ]
-      }
-    ],
-    "PreCompact": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "~/.claude/hooks/pre-compact-save.sh"
           }
         ]
       }
@@ -89,6 +60,5 @@
     "type": "command",
     "command": "~/.claude/statusline.sh",
     "padding": 0
-  },
-  "alwaysThinkingEnabled": true
+  }
 }

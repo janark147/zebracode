@@ -44,17 +44,7 @@ commands:
   migrate: null                       # e.g., "./vendor/bin/sail artisan migrate"
   clear_caches: null                  # e.g., "./vendor/bin/sail artisan cache:clear"
 
-dangerous_commands:                   # Blocked by destructive command hook
-  # Add project-specific dangerous commands here
-  # seed_fresh: null
-
-protected_files:                      # Patterns blocked by file protection hook
-  - ".env*"
-  - "package-lock.json"
-  - "composer.lock"
-  - "yarn.lock"
-  - "pnpm-lock.yaml"
-  # Add project-specific patterns here
+# Protected files and dangerous commands are permission rules in .claude/settings.json
 
 docs:
   main_doc: "DOCS.md"                # Primary documentation file

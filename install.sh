@@ -42,6 +42,14 @@ if ! command -v claude &>/dev/null; then
     [[ "$answer" =~ ^[Yy]$ ]] || exit 0
 fi
 
+if command -v claude &>/dev/null && ! claude plugin list 2>/dev/null | grep -q 'frontend-design@claude-plugins-official'; then
+    warn "'frontend-design' plugin not installed. /z-design needs it."
+    read -rp "  Install now? [Y/n] " answer
+    if [[ ! "$answer" =~ ^[Nn]$ ]]; then
+        claude plugin install frontend-design@claude-plugins-official && ok "frontend-design plugin installed"
+    fi
+fi
+
 if [[ "$(uname)" == "Darwin" ]] && ! command -v terminal-notifier &>/dev/null; then
     warn "'terminal-notifier' not found. Desktop notifications will not work."
     echo "  Install: brew install terminal-notifier"
@@ -62,6 +70,24 @@ if [ ! -d "$CLAUDE_DIR" ]; then
     info "Creating $CLAUDE_DIR/"
     mkdir -p "$CLAUDE_DIR"
 fi
+
+# ── Remove previously installed ZebraCode files ──
+# Copying never deletes, so files removed from the repo would stay installed.
+# Hooks that earlier versions installed and later removed:
+RETIRED_HOOKS=(
+    block-protected-files.sh
+    block-destructive-commands.sh
+    check-typescript-any.sh
+    format-on-edit.sh
+    pre-compact-save.sh
+)
+
+info "Removing previously installed ZebraCode skills, agents and hooks"
+rm -rf "$CLAUDE_DIR"/skills/z-* "$CLAUDE_DIR/skills/commit" "$CLAUDE_DIR/hooks/lib"
+rm -f "$CLAUDE_DIR"/agents/z-*.md
+for hook in "${RETIRED_HOOKS[@]}" $(cd "$SCRIPT_DIR/hooks" && ls *.sh); do
+    rm -f "$CLAUDE_DIR/hooks/$hook"
+done
 
 # ── Copy directories (skills, agents, hooks, templates) ──
 
@@ -115,22 +141,37 @@ elif [ ! -f "$SETTINGS_FILE" ]; then
     cp "$EXAMPLE_FILE" "$SETTINGS_FILE"
     ok "settings.json created"
 else
-    info "Merging hooks into existing settings.json"
+    info "Merging hooks, permissions and attribution into existing settings.json"
     cp "$SETTINGS_FILE" "${SETTINGS_FILE}${BACKUP_SUFFIX}"
     ok "Backup saved to settings.json${BACKUP_SUFFIX}"
 
-    # Extract hooks/env from example and deep-merge into existing settings
+    # Extract hooks/env/permission rules from example and merge into existing settings
     # jq's * operator does deep merge — user-added hook events and env vars are preserved
+    # Permission rules are added to the user's lists, never replacing them
     EXAMPLE_HOOKS=$(jq '.hooks // {}' "$EXAMPLE_FILE")
     EXAMPLE_ENV=$(jq '.env // {}' "$EXAMPLE_FILE")
+    EXAMPLE_DENY=$(jq '.permissions.deny // []' "$EXAMPLE_FILE")
+    EXAMPLE_ASK=$(jq '.permissions.ask // []' "$EXAMPLE_FILE")
+    RETIRED=$(printf '%s\n' "${RETIRED_HOOKS[@]}" | jq -R . | jq -s .)
 
     jq --argjson hooks "$EXAMPLE_HOOKS" \
        --argjson env "$EXAMPLE_ENV" \
-       '.hooks = (.hooks // {} | . * $hooks) | .env = (.env // {} | . * $env) | .includeCoAuthoredBy = false' \
+       --argjson deny "$EXAMPLE_DENY" \
+       --argjson ask "$EXAMPLE_ASK" \
+       --argjson retired "$RETIRED" \
+       '.hooks = (.hooks // {} | . * $hooks)
+        | .hooks |= with_entries(.value |= map(select(
+            [.hooks[]?.command // "" | split("/") | last] | any(. as $c | $retired | index($c)) | not)))
+        | .hooks |= with_entries(select(.value | length > 0))
+        | .env = (.env // {} | . * $env)
+        | .permissions.deny = ((.permissions.deny // []) + $deny | unique)
+        | .permissions.ask = ((.permissions.ask // []) + $ask | unique)
+        | .attribution = false
+        | del(.includeCoAuthoredBy)' \
        "$SETTINGS_FILE" > "${SETTINGS_FILE}.tmp" \
        && mv "${SETTINGS_FILE}.tmp" "$SETTINGS_FILE"
 
-    ok "Hooks and env merged into settings.json"
+    ok "Hooks, env, permissions and attribution merged into settings.json"
 fi
 
 # ── Handle global instruction files ──────────
@@ -195,26 +236,39 @@ check "$CLAUDE_DIR/hooks"     "hooks/ directory"
 check "$CLAUDE_DIR/templates" "templates/ directory"
 check "$CLAUDE_DIR/settings.json" "settings.json"
 
-SKILL_COUNT=$(ls -d "$CLAUDE_DIR/skills"/*/SKILL.md 2>/dev/null | wc -l | tr -d ' ')
-AGENT_COUNT=$(ls "$CLAUDE_DIR/agents/"*.md 2>/dev/null | wc -l | tr -d ' ')
-HOOK_COUNT=$(ls "$CLAUDE_DIR/hooks/"*.sh 2>/dev/null | wc -l | tr -d ' ')
+# Count installed copies of the repo's own skills, agents and hooks
+count_installed() {   # <repo glob> <installed dir> <suffix to check>
+    local n=0 item
+    for item in $1; do
+        [ -e "$2/$(basename "$item")$3" ] && n=$((n + 1))
+    done
+    echo "$n"
+}
+EXPECTED_SKILLS=$(ls -d "$SCRIPT_DIR"/skills/*/ | wc -l | tr -d ' ')
+EXPECTED_AGENTS=$(ls "$SCRIPT_DIR"/agents/*.md | wc -l | tr -d ' ')
+EXPECTED_HOOKS=$(ls "$SCRIPT_DIR"/hooks/*.sh | wc -l | tr -d ' ')
+SKILL_COUNT=$(count_installed "$SCRIPT_DIR/skills/*" "$CLAUDE_DIR/skills" "/SKILL.md")
+AGENT_COUNT=$(count_installed "$SCRIPT_DIR/agents/*.md" "$CLAUDE_DIR/agents" "")
+HOOK_COUNT=$(count_installed "$SCRIPT_DIR/hooks/*.sh" "$CLAUDE_DIR/hooks" "")
 
 info "Skills: $SKILL_COUNT | Agents: $AGENT_COUNT | Hooks: $HOOK_COUNT"
 
-if [ "$SKILL_COUNT" -lt 19 ]; then
-    warn "Expected 19 skills, found $SKILL_COUNT"
+if [ "$SKILL_COUNT" -lt "$EXPECTED_SKILLS" ]; then
+    warn "Expected $EXPECTED_SKILLS skills, found $SKILL_COUNT"
     ERRORS=$((ERRORS + 1))
 fi
 
-if [ "$AGENT_COUNT" -lt 10 ]; then
-    warn "Expected 10 agents, found $AGENT_COUNT"
+if [ "$AGENT_COUNT" -lt "$EXPECTED_AGENTS" ]; then
+    warn "Expected $EXPECTED_AGENTS agents, found $AGENT_COUNT"
     ERRORS=$((ERRORS + 1))
 fi
 
-if [ "$HOOK_COUNT" -lt 8 ]; then
-    warn "Expected 8 hooks, found $HOOK_COUNT"
+if [ "$HOOK_COUNT" -lt "$EXPECTED_HOOKS" ]; then
+    warn "Expected $EXPECTED_HOOKS hooks, found $HOOK_COUNT"
     ERRORS=$((ERRORS + 1))
 fi
+
+check "$CLAUDE_DIR/hooks/lib/plan.sh" "hooks/lib/plan.sh (shared plan helpers)"
 
 echo ""
 if [ "$ERRORS" -eq 0 ]; then

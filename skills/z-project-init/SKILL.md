@@ -53,8 +53,8 @@ Use AskUserQuestion to present auto-detected values as defaults. Let user confir
    - Lint/format/typecheck commands
    - Build/dev server commands
    - Migration / cache clear commands
-6. **Protected files** — defaults shown, user can add project-specific patterns
-7. **Dangerous commands** — defaults shown, user can add
+6. **Protected files** — files Claude must never edit. Defaults: `.env`, `.env.*` and the lock files found in step 1. User can add project-specific paths (e.g., `storage/`, `public/build/`, `*.pem`)
+7. **Dangerous commands** — commands that need the user's confirmation every time. Defaults: the stack's database wipe commands (e.g., `artisan migrate:fresh`, `artisan migrate:reset`, `artisan db:wipe`), `git push --force`, `git reset --hard`. User can add
 
 ### 3. Resolve Context7 Library IDs
 
@@ -67,10 +67,15 @@ If Context7 MCP is available, resolve library IDs for detected stack components:
 ### 4. Create Configuration Files
 
 1. Write `{project-root}/.claude/z-project-config.yml` from answers (including resolved `context7_ids`)
-2. Create `{project-root}/.claude/plans/` directory
-3. Create `{project-root}/.claude/.local/` directory
-4. Create `{project-root}/.claude/.gitignore` containing `.local/`
-5. Create `{project-root}/.claude/project-patterns.md`:
+2. Write the protected files and dangerous commands from the questionnaire (section 2) as permission rules in `{project-root}/.claude/settings.json`. If the file exists, add to its `permissions.deny` / `permissions.ask` arrays and keep every other key.
+   - Protected file → `permissions.deny` entry `Edit(...)`. `Edit` rules also cover the Write tool and shell redirects. A bare file name matches at any depth: `Edit(.env)`, `Edit(*.pem)`. Anchor folders and paths to the project root with a leading `/`: `Edit(/storage/**)`, `Edit(/database/*.sqlite)`.
+   - Exception: if the user protects `.claude/z-project-config.yml`, put `Edit(/.claude/z-project-config.yml)` in `permissions.ask` instead, so this skill can still update it after confirmation.
+   - Dangerous command → `permissions.ask` entry `Bash(...)`. A `*` matches any text, including nothing: `Bash(*artisan migrate:fresh*)` matches `php artisan …` and `./vendor/bin/sail artisan …`; `Bash(git push*--force*)` and `Bash(git push* -f*)` match both force-push forms.
+   - Do not add `rm -rf` — it would ask on every build-folder cleanup. Auto mode and Claude Code's built-in check already guard deletes of important paths.
+3. Create `{project-root}/.claude/plans/` directory
+4. Create `{project-root}/.claude/.local/` directory
+5. Create `{project-root}/.claude/.gitignore` containing `.local/`
+6. Create `{project-root}/.claude/project-patterns.md`:
 
 ```markdown
 # Project Patterns
@@ -108,6 +113,7 @@ If it doesn't exist: create a minimal one with stack info and convention pointer
 | **Stack** | {language} / {framework} / {frontend} |
 | **Tracker** | {type} ({project key}) |
 | **Config** | `.claude/z-project-config.yml` ✓ |
+| **Permissions** | `.claude/settings.json` — {N} protected, {M} confirm-first ✓ |
 | **Plans dir** | `.claude/plans/` ✓ |
 | **Gitignore** | `.claude/.gitignore` ✓ |
 
