@@ -2,6 +2,7 @@
 name: z-reviewer-performance
 description: Read-only performance reviewer for /z-review. Checks changed code for N+1 queries, unnecessary loops, memory issues, and scalability problems. Spawned by the /z-review skill.
 model: opus
+effort: xhigh
 tools: Read, Grep, Glob, mcp__context7__resolve-library-id, mcp__context7__get-library-docs
 ---
 
