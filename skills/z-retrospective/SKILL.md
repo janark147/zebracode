@@ -50,7 +50,7 @@ Check `.claude/.local/*-debug.md` files (if any survive):
 
 Assess how effectively the framework drove quality behavior:
 
-1. **Failure escalation frequency** — search Work Logs for `⚠` markers and audit entries with issues. How often did self-audit catch problems before commit vs. review catching them after?
+1. **Failure escalation frequency** — search Work Logs for `⚠` markers. How often did `/z-work` flag problems itself before commit vs. `/z-review` catching them after?
 2. **Proactive scanning hits** — did "scan surrounding files" catches appear in Work Logs? Count instances where related issues were found proactively vs. discovered later in review or production.
 3. **Deflection patterns** — scan for AskUserQuestion calls that pushed work to the user. Were they genuine blockers or avoidable with more investigation?
 4. **Recurring failure modes** — cluster failure patterns: same-approach repetition, giving up early, sloppy completion, guessing without reading. Track which modes recur across issues.

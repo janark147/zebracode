@@ -1,15 +1,11 @@
 ---
 description: "Complete feature: quality gates, push, PR, and wrap up"
 disable-model-invocation: true
-required-predecessor: "z-work"
-required-config:
-  - "git.target_branch"
-  - "commands.test_backend"
 ---
 
 # /z-done — Feature Completion
 
-Quality gates with evidence, push, PR creation, memory write, cleanup.
+Quality gates with evidence, push, PR creation, cleanup.
 
 ## Pre-flight Validation
 
@@ -77,13 +73,9 @@ If the user also wants to merge (old `/merge` behavior):
 - Ask first via AskUserQuestion: "Also merge the PR now?"
 - If confirmed: `gh pr merge` with appropriate strategy
 
-### Step 3: Memory Write
+### Step 3: Patterns Check
 
-1. Read the plan file for a summary of what was done
-2. Write a one-liner to `~/.claude/projects/{project}/memory/MEMORY.md`:
-   - Format: `- {date}: {issue-id} — {one-liner about what was done or learned}`
-3. Check `.claude/project-patterns.md` for entries from this issue-id
-   - If patterns were recorded during the workflow: include a note in the completion screen
+Check `.claude/project-patterns.md` for entries from this issue-id. If patterns were recorded during the workflow, include a note in the completion screen. (The plan file already holds the history of this issue — do not write it anywhere else.)
 
 ### Step 4: Cleanup
 
@@ -108,7 +100,7 @@ If the user also wants to merge (old `/merge` behavior):
 | | |
 |---|---|
 | **PR** | {url} |
-| **Memory** | updated ✓ |
+| **Patterns** | {N} recorded in project-patterns.md |
 | **Temp files** | cleaned ✓ |
 
 **━━━ Branch ready for review ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━**

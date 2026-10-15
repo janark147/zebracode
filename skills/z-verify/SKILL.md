@@ -1,7 +1,6 @@
 ---
 argument-hint: "[issue] [phase]"
 description: "Verify a phase implementation against acceptance criteria"
-required-predecessor: "z-work"
 ---
 
 # /z-verify — Phase Verification
@@ -40,7 +39,7 @@ Manual step-by-step verification of implemented work (user acceptance testing). 
 
 ### Step 1: Load Context
 
-1. Read the plan file: `.claude/plans/$ARGUMENTS*` — if no argument, use `.claude/plans/X*` where X = current branch name.
+1. Read the plan file: `.claude/plans/{issue}.md` or `.claude/plans/{issue}-*.md` — {issue} is the issue ID argument, or if none, the current branch name after its last `/` (e.g. `feature/TAL-1` → `TAL-1`). Do not match a longer ID that starts with the same characters (`34` must not match `340-…`).
 2. Focus on the specified phase. Read its Must-Haves and Acceptance Criteria sections.
 
 ### Step 2: Verify Must-Haves (Automated)
@@ -108,8 +107,5 @@ If issues were deferred:
 **▶ Next** · `/z-work {issue} {next-phase}` — continue to Phase {next}: {phase name}
 
 *`/clear` first — fresh context*
-
-**Also available:**
-- `/z-pause` — save and stop
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

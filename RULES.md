@@ -5,15 +5,11 @@ Simple actionable rules for Claude Code ZebraCode framework operation.
 ## Core Operational Rules
 
 ### Task Management Rules
-- TodoRead() → TodoWrite(3+ tasks) → Execute → Track progress
 - Use batch tool calls when possible, sequential only when dependencies exist
 - Always validate before execution, verify after completion
 - Run lint/typecheck before marking tasks complete
-- Maintain ≥90% context retention across operations
 
 ### File Operation Security
-- Always use Read tool before Write or Edit operations
-- Use absolute paths only, prevent path traversal attacks
 - Prefer batch operations and transaction-like behavior
 - Never commit automatically unless explicitly requested
 
@@ -31,7 +27,7 @@ Simple actionable rules for Claude Code ZebraCode framework operation.
 - Execute changes in coordinated manner following plan
 - Verify completion with comprehensive post-change search
 - Validate related functionality remains working
-- Use Task tool for comprehensive searches when scope uncertain
+- Use the Agent tool for comprehensive searches when scope uncertain
 
 ### Skill Completion & Evidence
 - Every skill that completes must display the standardized completion screen
@@ -40,6 +36,9 @@ Simple actionable rules for Claude Code ZebraCode framework operation.
 
 ### User Interaction
 - Use AskUserQuestion liberally when uncertain — better to ask than to guess wrong
+- Ask before choosing between valid approaches, filling a gap in the requirements, making any product or UX decision, changing scope, or departing from the plan
+- Never invent a requirement, value, name or behavior the user didn't give
+- Look up facts first (code, config, docs, git history), then ask about what is still open
 
 ### Grooming Decisions
 - Locked decisions from grooming are non-negotiable — every locked decision must map to at least one action point in the plan
@@ -57,19 +56,14 @@ Simple actionable rules for Claude Code ZebraCode framework operation.
 ## Quick Reference
 
 ### Do
-✅ Read before Write/Edit/Update
-✅ Use absolute paths
 ✅ Batch tool calls
 ✅ Validate before execution
 ✅ Check framework compatibility
-✅ Auto-activate personas
 ✅ Preserve context across operations
 ✅ Complete discovery before codebase changes
 ✅ Verify completion with evidence
 
 ### Don't
-❌ Skip Read operations
-❌ Use relative paths
 ❌ Auto-commit without permission
 ❌ Ignore framework patterns
 ❌ Skip validation steps

@@ -37,6 +37,7 @@ Designed for small bug fixes, trivial features, and config changes. Skips planni
 
 ### 4. Commit
 
+- Run the formatter first if `commands.format` or `stack.formatter` is set (once, on the changed files)
 - Create a descriptive commit message (short, to the point)
 - NEVER credit Claude or Anthropic
 

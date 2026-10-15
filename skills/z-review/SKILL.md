@@ -1,12 +1,6 @@
 ---
 argument-hint: "[branch/issue-id]"
 description: "Comprehensive multi-agent code review of branch"
-required-predecessor: "z-work"
-required-mcps: ["context7"]
-required-config:
-  - "git.target_branch"
-  - "stack.language"
-  - "stack.framework"
 ---
 
 # /z-review — Multi-Agent Code Review
@@ -28,7 +22,7 @@ Comprehensive code review with 3 parallel review agents (every reviewer sees the
 ## Argument Parsing
 
 - **Branch or issue ID**: First positional argument. If not provided, use current branch.
-- Read plan file: `.claude/plans/$ARGUMENTS*` — if no argument, use `.claude/plans/X*` where X = current branch name.
+- Read plan file: `.claude/plans/{issue}.md` or `.claude/plans/{issue}-*.md` — {issue} is the issue ID argument, or if none, the current branch name after its last `/` (e.g. `feature/TAL-1` → `TAL-1`). Do not match a longer ID that starts with the same characters (`34` must not match `340-…`).
 
 ---
 
@@ -67,9 +61,9 @@ Any unchecked must-have is automatically flagged as a review issue with **Severi
 
 **Warn before a very large run:** If the diff has more than 5,000 changed lines (added + removed, from `git diff --stat`), say so and ask via **AskUserQuestion** whether to review the whole branch anyway or stop so the user can review it in smaller branches or by phase. Each pass is 3 reviewer runs, so a 2-pass review is 6 runs plus up to 3 verification runs.
 
-**Spawn only the named agents:** Spawn reviewers only as the `z-reviewer-*` agent types, which restrict them to read-only tools. Before spawning, confirm that `z-reviewer-quality`, `z-reviewer-security`, and `z-reviewer-performance` appear in the Task tool's list of available agent types — a spawn that succeeds is not proof that the definition loaded. If they are not available, STOP and tell the user to run `install.sh` and restart Claude Code — do not fall back to a general-purpose agent.
+**Spawn only the named agents:** Spawn reviewers only as the `z-reviewer-*` agent types, which restrict them to read-only tools. Before spawning, confirm that `z-reviewer-quality`, `z-reviewer-security`, and `z-reviewer-performance` appear in the Agent tool's list of available agent types — a spawn that succeeds is not proof that the definition loaded. If they are not available, STOP and tell the user to run `install.sh` and restart Claude Code — do not fall back to a general-purpose agent.
 
-Spawn all review agent instances in parallel using the Task tool. Every prompt starts with the line `Mode: first pass`, followed by:
+Spawn all review agent instances in parallel using the Agent tool. Every prompt starts with the line `Mode: first pass`, followed by:
 - The path of the diff file and the paths of all changed files
 - The paths of `z-project-config.yml`, the stack-specific checklist (if any), CLAUDE.md, DOCS.md, `project-patterns.md`, and the plan file (requirements context). The agent Reads what it needs
 - Instructions to use Context7 sparingly: at most one targeted call, only to verify a specific framework-native protection a finding hinges on (suppress false positives)
@@ -219,16 +213,10 @@ For each phase that has review findings, append summary lines to that phase's `#
 
 *`/clear` first — fresh context*
 
-**Also available:**
-- `/z-pause` — save and stop
-
 **If clean review (M = 0):**
 
 **▶ Next** · `/z-done {issue}` — finalize and wrap up
 
 *`/clear` first — fresh context*
-
-**Also available:**
-- `/z-pause` — save and stop
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

@@ -3,7 +3,6 @@
 # ZebraCode v1.4
 - Stack config lives in `.claude/z-project-config.yml` — always read it for commands, tools, stack info
 - Never use native `/plan` — use `/z-plan` for tracked plan files with must-haves and phase structure
-- Skills validate prerequisites automatically — if blocked, follow the redirect to the predecessor skill
 
 # Tool policy: Context7
 Call Context7 ONLY when genuinely uncertain about an API:

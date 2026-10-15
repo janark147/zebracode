@@ -12,6 +12,10 @@ Use $ARGUMENTS as the commit message if provided. If arguments are provided, fol
 
 If no commit message is provided by the user, create a **SHORT AND TO THE POINT** commit message. One line. No body unless the change is genuinely complex.
 
+## Format First
+
+If `.claude/z-project-config.yml` sets `commands.format` or `stack.formatter`, run the formatter on the files being committed before committing, and include its changes in the commit. ZebraCode formats once here and in `/z-work`'s quality checks, not after every edit.
+
 ## Rules
 
 - NEVER credit Claude Code or Anthropic in the commit message. NEVER EVER.

@@ -8,7 +8,7 @@ A structured workflow framework for [Claude Code](https://docs.anthropic.com/en/
 |-----------|---------------|
 | **Evidence-based verification** | Every skill that claims progress must show concrete proof — test counts, linter output, `file:line` citations. No bare checkmarks, no "it works." |
 | **Least-privileged tool access** | Review and debug agents get read-only tools (Read, Grep, Glob). Only the main session modifies code. Agents can't accidentally break things. |
-| **Workflow state validation** | Hooks enforce prerequisites: stop blocked if plan has unchecked items, protected files can't be edited, destructive commands are rejected. |
+| **Workflow state validation** | A Stop hook asks Claude to confirm before stopping with unchecked items in a started phase. Permission rules block edits to protected files and ask before destructive commands. |
 | **Decision enforcement** | Grooming decisions are categorized as Locked, Deferred, or Discretion. Locked decisions map to plan actions. Deferred items are never implemented unless re-categorized. |
 | **Persistent project patterns** | Conventions, pitfalls, and shortcuts discovered during work are recorded in `.claude/project-patterns.md` (with user approval) and retained across sessions and branches. |
 | **Full audit trail** | Plan files contain per-phase Work Logs — append-only entries with commit hashes, skill references, and `file:line` citations that survive `/clear` and context compaction. |
@@ -52,8 +52,13 @@ A structured workflow framework for [Claude Code](https://docs.anthropic.com/en/
 | MCP | Purpose | When needed |
 |-----|---------|-------------|
 | Jira MCP | Issue tracker integration | Jira projects |
-| [Magic / 21st.dev](https://21st.dev) | UI component generation | `/z-design` mockups |
 | Laravel Boost | Enhanced Laravel support | Laravel projects |
+
+### Plugins
+
+| Plugin | Purpose | When needed |
+|--------|---------|-------------|
+| `frontend-design@claude-plugins-official` | Claude's design skill — design plan, generic-default checks, self-critique | `/z-design` mockups (`install.sh` offers to install it) |
 
 > **Tip**: Use project-scope MCP configuration where possible to avoid loading unused MCPs globally.
 
@@ -96,7 +101,7 @@ chmod +x ~/.claude/statusline.sh
 # cp RULES.md ~/.claude/RULES.md
 ```
 
-Then merge the hooks configuration from `settings.json.example` into your `~/.claude/settings.json`. See [Configuration](#configuration) for the full hooks config.
+Then merge the hooks, permission rules and `attribution` setting from `settings.json.example` into your `~/.claude/settings.json`. See [Configuration](#configuration).
 
 ---
 
@@ -113,9 +118,10 @@ This runs an interactive questionnaire that:
 1. Auto-detects your stack (language, framework, test runner, formatter)
 2. Asks about issue tracker, git conventions, and tooling preferences
 3. Creates `.claude/z-project-config.yml` with your answers
-4. Creates `.claude/.gitignore` (ignores `.local/` ephemeral state)
+4. Writes protected files and dangerous commands as permission rules in `.claude/settings.json`
+5. Creates `.claude/.gitignore` (ignores `.local/` ephemeral state)
 
-The config file is committed to git so all team members share the same ZebraCode configuration.
+Both files are committed to git so all team members share the same ZebraCode configuration and protections.
 
 ---
 
@@ -125,7 +131,7 @@ The config file is committed to git so all team members share the same ZebraCode
   <img src="zebracode-workflow.svg" alt="ZebraCode Standard Feature Workflow" width="700" />
 </p>
 
-**Key principle**: Run `/clear` between each skill invocation. Context is preserved via plan files, session files, and git history — not the conversation window.
+**Key principle**: Run `/clear` between each skill invocation. Context is preserved via plan files and git history — not the conversation window.
 
 ---
 
@@ -142,15 +148,14 @@ The config file is committed to git so all team members share the same ZebraCode
 | `/z-work` | Implement the next phase(s) of the plan | `[issue] [phase...] [--fix] [--docs]` |
 | `/z-verify` | Verify phase implementation against acceptance criteria | `[issue] [phase]` |
 | `/z-review` | Multi-agent code review with optional debate ring | `[branch/issue-id]` |
-| `/z-done` | Quality gates, push, PR creation, memory write | — |
+| `/z-done` | Quality gates, push, PR creation, cleanup | — |
 
-### Session Management
+To continue an earlier conversation, use Claude Code's built-in `/resume` (or `claude --resume`). After `/clear` or in a new session, the SessionStart hook shows the plan's next phase and the `/z-work` command for it.
+
+### Alternative Flows
 
 | Skill | Description | Arguments |
 |-------|-------------|-----------|
-| `/z-pause` | Save session state for later resumption | — |
-| `/z-resume` | Restore session from pause file | — |
-| `/z-continue` | Load branch context for ad-hoc post-work tasks | — |
 | `/z-quick` | Fast-track: start + implement + test + commit | `[issue] [branch]` |
 | `/z-debug` | Multi-agent bug investigation with hypothesis testing | `[issue-id \| resume] [branch]` |
 
@@ -179,22 +184,20 @@ All hooks are shell scripts in `~/.claude/hooks/`. They're wired via `~/.claude/
 
 | Hook | Event | Tool Match | Behavior |
 |------|-------|------------|----------|
-| `workflow-state.sh` | SessionStart | — | Injects workflow progress bar and next-step suggestion |
-| `format-on-edit.sh` | PostToolUse | Edit, Write, NotebookEdit | Auto-formats files using project's configured formatter |
-| `check-typescript-any.sh` | PostToolUse | Edit, Write | Warns when `: any` is introduced in TypeScript files |
-| `block-protected-files.sh` | PreToolUse | Edit, Write | **Blocks** edits to `.env*`, lock files, etc. (exit 2) |
-| `block-destructive-commands.sh` | PreToolUse | Bash | **Blocks** dangerous commands like `migrate:fresh` (exit 2) |
-| `verify-tasks-complete.sh` | Stop | — | **Blocks** stop if plan has unchecked items (exit 2) |
-| `pre-compact-save.sh` | PreCompact | — | Saves session state before context compaction |
+| `workflow-state.sh` | SessionStart | — | Injects workflow progress bar and next-step suggestion (also after `/clear` and compaction) |
+| `verify-tasks-complete.sh` | Stop | — | Asks Claude to confirm once before stopping when a started phase has unchecked items |
 | `notify-user.sh` | Notification | — | Desktop notification (macOS `terminal-notifier`) |
+
+`workflow-state.sh`, `verify-tasks-complete.sh` and `statusline.sh` share `hooks/lib/plan.sh`, which finds the plan for a branch (`feature/TAL-1` → `.claude/plans/TAL-1-*.md`) and counts only `## Phase <number>` sections.
+
+Protected files and dangerous commands are not hooks — they are `permissions.deny` and `permissions.ask` rules (see [Settings](#settings-claudesettingsjson)). Formatting runs once per phase in `/z-work`'s quality checks and in `/commit`, not after every edit.
 
 ### Hook API Notes
 
 - Hooks receive context via **JSON on stdin** (not command-line arguments)
 - Parse with `jq`: e.g., `jq -r '.tool_input.file_path'` or `jq -r '.tool_input.command'`
-- **Exit code 2** = block the action (PreToolUse, Stop only)
-- **Exit code 0** = allow / success
-- Stdout from hooks is injected into the conversation context
+- SessionStart plain stdout is added to Claude's context. For most other events plain stdout only goes to the debug log — return `hookSpecificOutput.additionalContext` in JSON to reach Claude
+- Stop hooks get `stop_hook_active: true` when Claude is already continuing because of a stop hook — allow the stop then, or the turn never ends
 
 ---
 
@@ -260,14 +263,22 @@ commands:
   lint: "npm run lint"
   format: "npx prettier --write"
   typecheck: "npx tsc --noEmit"
-
-protected_files:           # Blocked by file protection hook
-  - ".env*"
-  - "package-lock.json"
-
-dangerous_commands:        # Blocked by destructive command hook
-  # seed_fresh: "artisan db:seed --force"
 ```
+
+### Project Permissions: `.claude/settings.json`
+
+Also written by `/z-project-init`. Protected files are `deny` rules, dangerous commands are `ask` rules (Claude Code asks you every time, even in auto mode):
+
+```json
+{
+  "permissions": {
+    "deny": ["Edit(.env)", "Edit(.env.*)", "Edit(/storage/**)", "Edit(*.pem)"],
+    "ask": ["Bash(*artisan migrate:fresh*)", "Bash(*wrangler delete*)"]
+  }
+}
+```
+
+`Edit(...)` rules also cover the Write tool and shell redirects such as `> .env`. A bare file name matches at any depth; a leading `/` anchors a path to the project root.
 
 ### Global Instructions
 
@@ -276,11 +287,11 @@ dangerous_commands:        # Blocked by destructive command hook
 
 ### Settings: `~/.claude/settings.json`
 
-The `settings.json.example` file contains the complete hooks configuration. Key settings:
+The `settings.json.example` file contains the complete configuration. Key settings:
 
-- `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS`: Enables multi-agent workflows
-- `includeCoAuthoredBy: false`: Prevents AI co-author attribution in commits
-- `alwaysThinkingEnabled: true`: Extended thinking for complex reasoning
+- `attribution: false`: No AI co-author trailer, PR text or session link in commits and PRs (Claude Code v2.1.281+)
+- `permissions.deny`: `.env` files and lock files can't be edited in any project
+- `permissions.ask`: database wipe commands, force pushes and `git reset --hard` always ask first
 
 ---
 
@@ -292,10 +303,10 @@ The `settings.json.example` file contains the complete hooks configuration. Key 
 ~/.claude/
 ├── CLAUDE.md              # Global instructions
 ├── RULES.md               # Operational rules
-├── settings.json          # Hooks + settings
-├── skills/                # 20 skill directories (SKILL.md + references/)
+├── settings.json          # Hooks, permission rules, settings
+├── skills/                # 17 skill directories (SKILL.md + references/)
 ├── agents/                # 10 agent definitions
-├── hooks/                 # 8 hook scripts
+├── hooks/                 # 3 hook scripts + lib/plan.sh
 ├── templates/             # Config templates
 └── statusline.sh          # Status bar script
 ```
@@ -305,13 +316,13 @@ The `settings.json.example` file contains the complete hooks configuration. Key 
 ```
 {project}/.claude/
 ├── z-project-config.yml   # Stack + tool config (committed)
+├── settings.json          # Permission rules: protected files, dangerous commands (committed)
 ├── project-patterns.md    # Accumulated patterns (committed)
 ├── plans/                 # Plan files — like ADRs (committed)
 ├── .gitignore             # Contains: .local/
 └── .local/                # Ephemeral state (gitignored)
-    ├── {branch}-session.md
     ├── {branch}-debug.md
-    └── {branch}-compact-state.md
+    └── mockups/{issue}/   # /z-design mockup files
 ```
 
 ---
@@ -328,31 +339,31 @@ The `settings.json.example` file contains the complete hooks configuration. Key 
 
 - Check `~/.claude/settings.json` has the hooks section (compare with `settings.json.example`)
 - Verify scripts are executable: `chmod +x ~/.claude/hooks/*.sh`
-- Test hooks manually: `echo '{"tool_input":{"file_path":".env"}}' | ~/.claude/hooks/block-protected-files.sh`
+- Test hooks manually: `echo "{\"cwd\":\"$PWD\"}" | ~/.claude/hooks/workflow-state.sh`
 - Check `jq` is installed: `which jq`
 
-### Format-on-edit not working
+### Formatter not running
 
-- Ensure `stack.formatter` is set in `z-project-config.yml`
-- Ensure `commands.format` is set (e.g., `npx prettier --write`)
+- `/z-work` runs the formatter once per phase (Step 5, Quality Checks), and `/commit` runs it before committing
+- Ensure `stack.formatter` or `commands.format` is set in `z-project-config.yml` (e.g., `npx prettier --write`)
 - The formatter must be installed in the project (`npm install`)
 
 ### "Not on target branch" errors
 
-- Skills like `/z-pause` require you to be on a feature branch, not `main`/`master`
+- Skills like `/z-plan` require you to be on a feature branch, not `main`/`master`
 - Run `/z-start` first to create/checkout the feature branch
 
 ### Protected file blocked unexpectedly
 
-- Check `protected_files` patterns in `z-project-config.yml`
-- Patterns use glob matching (e.g., `.env*` matches `.env`, `.env.local`, `.env.production`)
-- To edit a protected file intentionally, temporarily remove it from the config
+- Run `/permissions` to see which `deny` rule matched and which settings file it comes from
+- Global rules are in `~/.claude/settings.json`, project rules in `.claude/settings.json`
+- A deny rule can't be overridden by an allow rule — to edit a protected file intentionally, remove its rule temporarily, or edit the file yourself
 
 ### Context lost after `/clear`
 
 - This is expected — context is preserved via files, not conversation history
 - Plan files in `.claude/plans/` track all progress
-- Run `/z-resume` if you previously ran `/z-pause`
+- Use `/resume` to continue an earlier conversation
 - The SessionStart hook shows current workflow state automatically
 
 ### Multi-agent review timeout
@@ -360,8 +371,7 @@ The `settings.json.example` file contains the complete hooks configuration. Key 
 - `/z-review` runs its 3 review agents for 2 passes (a third only when pass 2 still finds more than 5 new issues), each reviewer seeing the whole diff, then a verification round for findings below 70% confidence, plus 3 optional debate agents — this takes time
 - All agents use the `opus` model alias, which resolves to the current Opus model. To use a different model, change `model:` in `~/.claude/agents/z-*.md`
 - If `/z-review` or `/z-debug` reports that its agent types are not available, run `claude --debug` and look for skipped files in `~/.claude/agents/` — every agent file needs both `name` and `description` in its frontmatter
-- Ensure `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` is set to `"1"` in settings.json env
-- If agents fail to spawn, check Claude Code version supports agent teams
+- The agents are ordinary subagents; they don't need the experimental agent-teams setting
 
 ---
 

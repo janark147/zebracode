@@ -4,7 +4,7 @@ Runs a multi-agent plan verification. Replaces the former `/z-checklist` command
 
 ## Step 1: Load Plan
 
-1. Read the existing plan file: `.claude/plans/$ARGUMENTS*` — if no argument, use `.claude/plans/X*` where X = current branch name.
+1. Read the existing plan file: `.claude/plans/{issue}.md` or `.claude/plans/{issue}-*.md` — {issue} is the issue ID argument, or if none, the current branch name after its last `/` (e.g. `feature/TAL-1` → `TAL-1`). Do not match a longer ID that starts with the same characters (`34` must not match `340-…`).
 2. If no plan file found → display blocked screen and redirect to `/z-plan {issue}`.
 
 ```
@@ -13,7 +13,7 @@ Runs a multi-agent plan verification. Replaces the former `/z-checklist` command
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   Required     Plan file must exist
-  Missing      .claude/plans/{issue}*.md
+  Missing      .claude/plans/{issue}-*.md
 
 ─────────────────────────────────────────────────────────────────
   ▶ Run first  /z-plan {issue}
@@ -36,12 +36,12 @@ Count the implementation phases in the plan (excluding "Fix Issues" and "Documen
   - Agent 3: Integration & completeness check
   - Agent 4: Research best practices for the specific task
 
-Spawn agents using the Task tool with `subagent_type: "general-purpose"`. Each agent receives:
+Spawn agents using the Agent tool with `subagent_type: "general-purpose"`. Each agent receives:
 - The full plan file content
 - The project config (`z-project-config.yml`)
 - The verification checklist categories assigned to that agent (see Step 3)
 - Instructions to follow this process for EACH checklist item: **READ → RESEARCH → ANALYZE ROOT CAUSE → CHALLENGE → THINK → RESPOND**
-- Instructions to cite specific plan sections AND `file:line` code references for every flagged issue (see §9.10)
+- Instructions to cite specific plan sections AND `file:line` code references for every flagged issue
 - Access to Context7 for framework/library verification
 
 **ANALYZE ALL ITEMS ONE BY ONE. ACHIEVE 100% COVERAGE. DO NOT MISS A SINGLE ITEM.**

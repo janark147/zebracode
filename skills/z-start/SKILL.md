@@ -2,9 +2,6 @@
 argument-hint: "[issue]"
 description: "Start working on a feature. Reads the GH/JIRA issue & switches to the correct branch."
 disable-model-invocation: true
-required-config:
-  - "git.target_branch"
-  - "issue_tracker.type"
 ---
 
 # /z-start — Prepare Working Tree

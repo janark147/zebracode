@@ -2,9 +2,6 @@
 argument-hint: "[issue]"
 description: "Interactive grooming session for an issue"
 disable-model-invocation: true
-required-predecessor: "z-start"
-required-config:
-  - "issue_tracker.type"
 ---
 
 # /z-groom — Issue Grooming

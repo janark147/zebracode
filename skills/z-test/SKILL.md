@@ -1,9 +1,6 @@
 ---
 argument-hint: "[backend/frontend]"
 description: "Run test suite and fix any failures"
-required-predecessor: "z-work"
-required-config:
-  - "commands.test_backend"
 ---
 
 # /z-test — Test Runner & Fixer

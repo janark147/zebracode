@@ -1,10 +1,6 @@
 ---
 argument-hint: "[issue] [--verify] [--design]"
 description: "Create implementation plan, or verify existing plan with --verify flag"
-required-predecessor: "z-start"
-required-mcps: ["context7"]
-required-config:
-  - "git.target_branch"
 ---
 
 # /z-plan — Implementation Planner
@@ -92,7 +88,7 @@ THOROUGHLY examine the documentation and existing codebase:
 - Identify relevant existing code that will be modified or extended
 - Check for existing tests, type definitions, API contracts
 - Use Context7 MCP to research framework/library patterns relevant to the task
-- Coordinate with MCP servers (Magic for UI, Context7 for patterns) as needed
+- Use Context7 for framework/library patterns as needed
 
 ### Step 3: Gather Requirements
 
@@ -165,7 +161,7 @@ existing implementations to build on, potential conflicts}
 - Generate mockup variations for user selection
 ### Action Points
 - [ ] Scan codebase for existing UI components, patterns, spacing, icons
-- [ ] Generate 5+ distinct mockup variations, using Magic MCP if relevant
+- [ ] Generate 5+ distinct mockup variations (via /z-design, which uses the frontend-design skill)
 - [ ] Present mockups to user for selection
 - [ ] Document selected design approach with rationale
 - [ ] Create component inventory (new vs reused)

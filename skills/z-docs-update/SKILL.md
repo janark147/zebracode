@@ -1,7 +1,6 @@
 ---
 argument-hint: "[issue]"
 description: "Update DOCS.md and optionally CLAUDE.md with changes from branch"
-required-predecessor: "z-work"
 ---
 
 # /z-docs-update — Documentation Updater
@@ -17,7 +16,7 @@ Update project documentation with changes from the current branch. Also referenc
 ## Argument Parsing
 
 - **Issue ID**: First positional argument. If not provided, derive from current branch name.
-- Read plan file: `.claude/plans/$ARGUMENTS*` — if no argument, use `.claude/plans/X*` where X = current branch name.
+- Read plan file: `.claude/plans/{issue}.md` or `.claude/plans/{issue}-*.md` — {issue} is the issue ID argument, or if none, the current branch name after its last `/` (e.g. `feature/TAL-1` → `TAL-1`). Do not match a longer ID that starts with the same characters (`34` must not match `340-…`).
 
 ---
 

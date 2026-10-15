@@ -33,7 +33,7 @@ Systematic debugging with 3 parallel investigator agents, a judge for hypothesis
 2. Verify clean working tree (`git status` — if dirty, warn and **stop**)
 3. Pull latest from target branch (read `git.target_branch` from config)
 4. Run migrations if configured: execute `commands.migrate` from `z-project-config.yml` (skip if null)
-5. Clear caches if configured: execute `commands.clear_cache` from `z-project-config.yml` (skip if null)
+5. Clear caches if configured: execute `commands.clear_caches` from `z-project-config.yml` (skip if null)
 6. If `$1` is an issue ID: read the issue from the tracker (same pattern as `/z-start`)
 7. If `$1` is not an issue ID: use it as the bug description
 
@@ -57,7 +57,7 @@ Attempt to write a failing test that reproduces the bug:
 
 ### Step 3: Multi-Agent Investigation
 
-Spawn 3 investigator agents in parallel using the Task tool. Each agent receives:
+Spawn 3 investigator agents in parallel using the Agent tool. Each agent receives:
 - The bug description / issue details
 - The reproduction test results (if any)
 - Stack info from `z-project-config.yml`
@@ -144,7 +144,7 @@ Apply the most likely fix:
 
 **IF TESTS PASS:**
 1. Delete the debug temp file (`.claude/.local/{branch}-debug.md`)
-2. Commit with descriptive message (e.g., "fix: {root cause description}")
+2. Run the formatter if `commands.format` or `stack.formatter` is set (once, on the changed files), then commit with descriptive message (e.g., "fix: {root cause description}")
 3. **Pattern recording** — ask via **AskUserQuestion**: "Root cause was: {root cause}. Save to project patterns?"
    - If approved: append to `.claude/project-patterns.md` under "Common Pitfalls"
    - Format: `- {root cause description} — fix: {brief solution} (debugged in {issue-id}, {date})`
@@ -219,7 +219,7 @@ Apply the most likely fix:
 ───────────────────────────────────────────────────────────────
 **▶ Next** · Provide additional context or try a different angle
 
-*Consider: `/z-pause` to save findings for manual review*
+*Findings stay in `.claude/.local/{branch}-debug.md` — `/z-debug resume` continues from them*
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 

@@ -2,10 +2,6 @@
 argument-hint: "[issue] [phase] [phase] [--fix] [--docs]"
 description: "Implement the next phase(s) of the plan"
 disable-model-invocation: true
-required-predecessor: "z-plan"
-required-mcps: ["context7"]
-required-config:
-  - "git.target_branch"
 ---
 
 # /z-work — Phase Executor
@@ -28,7 +24,7 @@ required-config:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   Required     Plan file must exist
-  Missing      .claude/plans/{issue}*.md
+  Missing      .claude/plans/{issue}-*.md
 
 ─────────────────────────────────────────────────────────────────
   ▶ Run first  /z-plan {issue}
@@ -60,7 +56,7 @@ If no phase numbers are provided, find the next undone phase from the plan file.
 
 ### Step 1: Load Context
 
-1. Read the plan file: `.claude/plans/$ARGUMENTS*` — if no argument, use `.claude/plans/X*` where X = current branch name.
+1. Read the plan file: `.claude/plans/{issue}.md` or `.claude/plans/{issue}-*.md` — {issue} is the issue ID argument, or if none, the current branch name after its last `/` (e.g. `feature/TAL-1` → `TAL-1`). Do not match a longer ID that starts with the same characters (`34` must not match `340-…`).
 2. Read `.claude/z-project-config.yml` for test/lint/typecheck commands, stack info.
 3. Read `.claude/project-patterns.md` if it exists — apply known patterns, avoid recorded pitfalls.
 4. Read `.claude/.local/{branch}-verify-amendments.md` if it exists — check for outstanding amendments from `/z-plan --verify`.
@@ -73,7 +69,7 @@ If no phase numbers are provided, find the next undone phase from the plan file.
 
 Based on the phase content, load relevant reference files. Load ONCE per execution, not per step.
 
-- If phase has `**Type**: design` → Read `references/design-patterns.md`. This phase delegates to `/z-design` logic (codebase scan → mockup generation → user selection). The Magic MCP is used instead of Context7 for this phase.
+- If phase has `**Type**: design` → Read `references/design-patterns.md`. This phase delegates to `/z-design` logic (codebase scan → mockup generation → user selection) and uses the frontend-design skill.
 - If phase involves API work (new endpoints, controllers, services) → Read `references/api-patterns.md`
 - If phase involves frontend/UI work (components, views, templates) → Read `references/ui-patterns.md`
 - If phase involves database changes (migrations, schema, models) → Read `references/migration-patterns.md`
@@ -86,7 +82,7 @@ For each undone action point in the phase:
 1. **Pick** the next unchecked action point
 2. **Analyze** implementation requirements, detect technology context
 3. **Coordinate** with MCP servers only when needed:
-   - Context7 only when uncertain about a framework/library API — not as a routine per-step call (Magic MCP if design phase)
+   - Context7 only when uncertain about a framework/library API — not as a routine per-step call
    - Use AskUserQuestion tool liberally when uncertain
 4. **Implement** the step — write production-quality code:
    - Follow existing project conventions and patterns
@@ -117,10 +113,11 @@ When a phase introduces new or changed behavior, write tests within the same pha
 
 Before announcing phase completion, run all applicable quality checks from config:
 
-1. **Tests**: Run `commands.test_backend` (and `test_frontend` if applicable). Report: `{pass} passing, {fail} failing`
-2. **Linter**: If `commands.lint` is set, run it. Report: `{N} warnings`
-3. **Type checker**: If `commands.typecheck` is set, run it. Report: `{N} errors`. NO `Type: any` allowed — fix immediately.
-4. **Build**: If `commands.build` is set, verify it succeeds.
+1. **Formatter**: If `commands.format` or `stack.formatter` is set, run the formatter on the files changed in this phase (from `git status --porcelain`). Run it once here, not after each edit — formatting between edits can remove an import that the next edit needs. Report: `{N} files formatted`
+2. **Tests**: Run `commands.test_backend` (and `test_frontend` if applicable). Report: `{pass} passing, {fail} failing`
+3. **Linter**: If `commands.lint` is set, run it. Report: `{N} warnings`
+4. **Type checker**: If `commands.typecheck` is set, run it. Report: `{N} errors`. NO `Type: any` allowed — fix immediately.
+5. **Build**: If `commands.build` is set, verify it succeeds.
 
 ### Step 6: Must-Haves Verification
 
@@ -138,21 +135,7 @@ If ANY must-have cannot be verified: **STOP** and ask user via AskUserQuestion.
 
 Each phase gets its own commit (or multiple small commits within a phase). Never bundle multiple phases into one commit. Commit messages should be short and to the point — just the main result.
 
-### Step 8: Self-Audit Before Commit
-
-Before committing phase work, answer these five questions:
-
-1. **Evidence**: Did I verify with concrete output (test results, build output, curl response) — not just "it works"?
-2. **Surroundings**: Did I scan the same file and related files for similar issues or patterns?
-3. **Edge cases**: Did I handle empty/null inputs, boundary values, and invalid states?
-4. **Proper fix**: Is this a root-cause fix or a workaround? If workaround, flag it.
-5. **Review-ready**: Would this survive code review without changes?
-
-If all 5 pass → proceed to commit.
-- Any "no" → fix before committing. If unfixable, flag to user via AskUserQuestion.
-- Append audit result to Work Log: `- /z-work audit — {pass|issues found: ...}`
-
-### Step 9: Self-Reflection Checkpoint
+### Step 8: Self-Reflection Checkpoint
 
 Before announcing phase completion, silently evaluate:
 - Where did I use a default/template pattern instead of making a deliberate choice for this codebase?
@@ -164,7 +147,7 @@ If nothing surfaces → proceed silently.
 - Minor concern → append to Work Log: `- /z-work ⚠ — {concern}`
 - Genuine issue → flag to user via AskUserQuestion before completing
 
-### Step 10: Phase Summary & Completion Screen
+### Step 9: Phase Summary & Completion Screen
 
 Display evidence-based progress, then the completion screen:
 
@@ -192,7 +175,6 @@ Display evidence-based progress, then the completion screen:
 
 **Also available:**
 - `/z-verify {issue} {N}` — verify this phase with user
-- `/z-pause` — save progress and stop
 - `/z-review` — skip ahead to review
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -201,9 +183,6 @@ Display evidence-based progress, then the completion screen:
 
 **▶ Next** · `/commit` — commit phase changes
          · Then → `/z-review {issue}` — multi-agent code review before fixing issues
-
-**Also available:**
-- `/z-pause` — save progress and stop
 
 ---
 
