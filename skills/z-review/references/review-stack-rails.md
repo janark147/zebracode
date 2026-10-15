@@ -2,13 +2,15 @@
 
 Stack-specific review items for Ruby on Rails projects. Loaded when `stack.framework` is `rails`. Fed to review agents as additional context alongside the generic review instructions.
 
+> Checked against Ruby on Rails 8.1.4 on 2026-10-15. If the project uses a newer version, check Context7 before relying on a version-specific statement here.
+
 ## Quality Review Items
 
 ### Architecture & Patterns
 - Controllers are thin — complex business logic lives in service objects, concerns, or model methods
 - Service objects follow project conventions (single `call` method, dependency injection)
 - Proper use of concerns for shared model/controller behavior (not a dumping ground)
-- Strong params used for all user input (`params.require(:model).permit(:fields)`)
+- Strong params used for all user input (`params.expect(model: [:fields])`, preferred since Rails 8, or `params.require(:model).permit(:fields)`)
 - Callbacks (`before_action`, `after_create`, etc.) are minimal and well-documented — no hidden side effects
 
 ### Rails/Ruby Specifics
@@ -43,13 +45,13 @@ Stack-specific review items for Ruby on Rails projects. Loaded when `stack.frame
 ### Authentication & Authorization
 - Authorization checks on all controller actions (Pundit policies, CanCanCan abilities, or manual checks)
 - No IDOR vulnerabilities — scoped queries (`current_user.posts.find(params[:id])` not `Post.find(params[:id])`)
-- `before_action :authenticate_user!` (Devise) or equivalent on protected controllers
+- `before_action :authenticate_user!` (Devise), `require_authentication` (Rails 8+ authentication generator — review `allow_unauthenticated_access` exemptions), or equivalent on protected controllers
 - Password handling uses bcrypt via `has_secure_password` or Devise (never plain text)
 
 ### Input Validation & Injection
 - Strong params on all create/update actions — no `params.permit!` or mass assignment from unfiltered params
 - No string interpolation in `where` clauses (`where("name = '#{name}'"`) — use parameterized queries (`where(name: name)` or `where("name = ?", name)`)
-- `find_by_sql` and `connection.execute` use parameterized queries
+- `find_by_sql` uses placeholders (`find_by_sql(["... = ?", value])`); `execute` takes no binds, so values go through `sanitize_sql_array` (`ActiveRecord::Base.connection` is soft-deprecated — use `with_connection`/`lease_connection`)
 - File uploads validated: content type whitelist, size limit, filename sanitization (ActiveStorage or CarrierWave/Shrine)
 - Command injection prevented in any `system()`, backtick, `exec`, `IO.popen` calls
 - No `send` or `public_send` with user-controlled method names

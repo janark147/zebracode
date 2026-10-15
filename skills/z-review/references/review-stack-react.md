@@ -1,6 +1,8 @@
 # React Review Checklist
 
-Stack-specific review items for React projects (Vite, CRA, or custom bundler — NOT Next.js). Loaded when `stack.framework` is `react`. Fed to review agents as additional context alongside the generic review instructions.
+Stack-specific review items for React projects (Vite, CRA (deprecated), or custom bundler — NOT Next.js). Loaded when `stack.framework` is `react`. Fed to review agents as additional context alongside the generic review instructions.
+
+> Checked against React 19.3.1 on 2026-10-15. If the project uses a newer version, check Context7 before relying on a version-specific statement here.
 
 ## Quality Review Items
 
@@ -12,7 +14,7 @@ Stack-specific review items for React projects (Vite, CRA, or custom bundler —
 - No prop drilling deeper than 2-3 levels — use context or state management instead
 
 ### React Specifics
-- Hooks follow Rules of Hooks (no conditional hooks, no hooks in loops)
+- Hooks follow Rules of Hooks (no conditional hooks, no hooks in loops; the `use` API is not a Hook and may be called conditionally)
 - `useEffect` dependencies are correct and complete — no missing deps, no unnecessary deps
 - `useEffect` cleanup functions present for subscriptions, timers, and event listeners
 - `key` props on list items use stable, unique identifiers (not array index, unless list is static and never reordered)

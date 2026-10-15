@@ -2,6 +2,8 @@
 
 Loaded during every phase that introduces new or changed behavior. Absorbs the former `/z-tests` command.
 
+> Checked against Jest 30, Vitest 5, PHPUnit 13, pytest 9, RSpec 3.13, Laravel 13.x on 2026-10-15. If the project uses a newer version, check Context7 before relying on a version-specific statement here.
+
 ## Process
 
 1. **Analyze the phase diff**: What new behavior was added? What existing behavior changed? What edge cases exist?

@@ -2,6 +2,8 @@
 
 Stack-specific considerations when creating a plan for a Django project.
 
+> Checked against Django 6.1.2, Django REST Framework 3.18.3 on 2026-10-15. If the project uses a newer version, check Context7 before relying on a version-specific statement here.
+
 ## Phase Structuring
 
 - **Migrations first**: If the feature needs new models or field changes, plan the migration phase before views/serializers. Run `makemigrations` + `migrate` as part of the phase.

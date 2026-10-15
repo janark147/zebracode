@@ -2,6 +2,8 @@
 
 Stack-specific review items for FastAPI projects. Loaded when `stack.framework` is `fastapi`. Fed to review agents as additional context alongside the generic review instructions.
 
+> Checked against FastAPI 0.143.2, Pydantic 2.14.1, SQLAlchemy 2.1.4, Alembic 1.20.0 on 2026-10-15. If the project uses a newer version, check Context7 before relying on a version-specific statement here.
+
 ## Quality Review Items
 
 ### Architecture & Patterns
@@ -13,10 +15,10 @@ Stack-specific review items for FastAPI projects. Loaded when `stack.framework` 
 
 ### FastAPI/Python Specifics
 - Async/sync consistency: `async def` routes use async DB drivers (asyncpg, aiosqlite); `def` routes use sync drivers — no mixing async route with sync DB calls (blocks event loop)
-- Pydantic schemas defined for request and response bodies (correct version: v1 `validator` vs v2 `model_validator`)
+- Pydantic schemas defined for request and response bodies (correct version: v1 `validator`/`root_validator` vs v2 `field_validator`/`model_validator`; FastAPI 0.126+ supports v2 only)
 - Database sessions properly scoped: `yield`-based dependencies with commit/rollback/close lifecycle
 - Alembic migrations present for schema changes, reversible, and production-safe
-- `select_related` / `joinedload` / `selectinload` used in SQLAlchemy queries (no N+1)
+- `joinedload` / `selectinload` loader options used in SQLAlchemy queries (no N+1)
 - Background tasks used for non-blocking operations (`BackgroundTasks` or Celery)
 - Proper HTTP status codes returned (201 for creation, 204 for deletion, 422 for validation errors)
 - Path and query parameters have proper type annotations and validation constraints (`gt=0`, `max_length`, etc.)
@@ -48,10 +50,10 @@ Stack-specific review items for FastAPI projects. Loaded when `stack.framework` 
 
 ### Input Validation & Injection
 - All user input validated via Pydantic schemas (not raw `request.body()` or `request.json()`)
-- SQLAlchemy queries use parameterized statements (`.filter(Model.field == value)`) — no string formatting in `.text()` or raw SQL
-- File uploads validated: content type whitelist, size limit via `UploadFile` constraints
+- SQLAlchemy queries use parameterized statements (`.filter(Model.field == value)`) — no string formatting in `text()` (use `:name` bound parameters) or raw SQL
+- File uploads validated: content type whitelist, size limit enforced in code (`UploadFile` has no max-size option — check `UploadFile.size` or read with a byte cap)
 - Path parameters validated with type annotations and constraints (no path traversal via `../`)
-- Command injection prevented in any `subprocess`, `os.system`, or `asyncio.create_subprocess` calls
+- Command injection prevented in any `subprocess`, `os.system`, or `asyncio.create_subprocess_exec`/`create_subprocess_shell` calls
 
 ### CORS Configuration
 - CORS middleware configured with explicit origins (not `allow_origins=["*"]` in production)

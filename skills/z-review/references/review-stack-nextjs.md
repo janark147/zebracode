@@ -2,21 +2,23 @@
 
 Stack-specific review items for Next.js projects. Loaded when `stack.framework` is `nextjs`. Fed to review agents as additional context alongside the generic review instructions.
 
+> Checked against React 19.3.1, Next.js 16.4.1 on 2026-10-15. If the project uses a newer version, check Context7 before relying on a version-specific statement here.
+
 ## Quality Review Items
 
 ### Architecture & Patterns
 - Server Components used by default — `"use client"` only added when interactivity is required
-- Data fetching happens in server components or server actions (not client-side `useEffect` + `fetch` for initial data)
+- Data fetching happens in server components (not client-side `useEffect` + `fetch` for initial data); server actions are for mutations, not data fetching
 - Proper separation between server and client component boundaries
 - Shared layouts used for common UI (not duplicated across pages)
-- Middleware used appropriately (auth, redirects) — not overloaded with business logic
+- Proxy (`proxy.ts`, formerly `middleware.ts`) used appropriately (optimistic auth checks, redirects) — not overloaded with business logic
 
 ### Next.js Specifics (App Router)
 - Route segments follow file-system conventions (`page.tsx`, `layout.tsx`, `loading.tsx`, `error.tsx`)
 - `loading.tsx` and `error.tsx` present for routes with data fetching
 - Proper use of `generateMetadata` or `metadata` export for SEO
 - Server Actions validate input (Zod or manual) — they're public HTTP endpoints
-- `revalidatePath()` / `revalidateTag()` called after data mutations (stale cache prevention)
+- `updateTag()` / `revalidateTag(tag, profile)` / `revalidatePath()` called after data mutations (stale cache prevention; single-argument `revalidateTag()` is deprecated)
 - Dynamic routes use proper typing for `params` and `searchParams`
 - `next/image` used for images (not raw `<img>`) with proper `width`/`height` or `fill`
 - `next/link` used for internal navigation (not `<a>` tags) with proper prefetching behavior
@@ -47,11 +49,11 @@ Stack-specific review items for Next.js projects. Loaded when `stack.framework` 
 ### Server Actions & API Routes
 - Server Actions validate ALL input with Zod or equivalent (they are publicly accessible endpoints)
 - Server Actions check authentication and authorization before performing operations
-- API routes validate request method (`req.method`), input, and authentication
+- API routes validate request method (`req.method` in `pages/api/`; App Router `route.ts` exports one function per method, others get 405), input, and authentication
 - No sensitive logic exposed to client components — business logic stays server-side
 
 ### Authentication & Authorization
-- Middleware checks auth on protected routes (not just client-side redirects)
+- Proxy (`proxy.ts`) checks auth on protected routes (not just client-side redirects) — as an optimistic check only, never the only line of defense
 - `cookies()` and `headers()` used server-side for session validation
 - Protected API routes and server actions verify session/token before proceeding
 - No auth bypass via direct API route access (all routes independently validate auth)
@@ -74,6 +76,6 @@ Stack-specific review items for Next.js projects. Loaded when `stack.framework` 
 - `console.log` with sensitive data not present in server components (shows in server logs)
 
 ### CSRF & Request Integrity
-- Server Actions have built-in CSRF protection (Next.js handles this) — verify not disabled
+- Server Actions have built-in CSRF protection (POST-only, `Origin` vs `Host` check) — verify `serverActions.allowedOrigins` is not overly broad
 - Custom API routes implement CSRF protection if accepting form submissions
 - State-changing operations use POST/PUT/PATCH/DELETE (never GET)

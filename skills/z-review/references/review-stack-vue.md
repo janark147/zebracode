@@ -2,6 +2,8 @@
 
 Stack-specific review items for Vue.js projects. Loaded when `stack.framework` is `vue`. Fed to review agents as additional context alongside the generic review instructions.
 
+> Checked against Vue 3.5.44, Inertia 3.9.1, Vite 8.3.4 on 2026-10-15. If the project uses a newer version, check Context7 before relying on a version-specific statement here.
+
 ## Quality Review Items
 
 ### Architecture & Patterns
@@ -14,7 +16,7 @@ Stack-specific review items for Vue.js projects. Loaded when `stack.framework` i
 ### Vue Specifics
 - `v-for` always has a `:key` with a stable, unique identifier (not array index, unless list is static)
 - `v-if` and `v-for` never used on the same element (Vue 3 precedence issue)
-- Reactive refs accessed with `.value` in `<script setup>` and without `.value` in templates
+- Reactive refs accessed with `.value` in `<script setup>` and without `.value` in templates (auto-unwrapping applies only to top-level refs)
 - Computed properties used for derived state (not methods that recalculate on every render)
 - Watchers have proper cleanup and avoid infinite loops (no watcher that modifies its own dependency)
 - `defineProps` and `defineEmits` use TypeScript generics (if project uses TS)
@@ -23,7 +25,7 @@ Stack-specific review items for Vue.js projects. Loaded when `stack.framework` i
 
 ### Inertia.js (if applicable)
 - Shared data accessed via `usePage()` composable, not redundant API calls
-- Form submissions use Inertia's `useForm()` for proper progress/error handling
+- Form submissions use Inertia's `<Form>` component (v2.1+) or `useForm()` for proper progress/error handling
 - Navigation uses `router.visit()` / `<Link>` instead of raw `window.location`
 - Preserved scroll position handled where needed
 

@@ -2,6 +2,8 @@
 
 Stack-specific considerations when creating a plan for a FastAPI project.
 
+> Checked against FastAPI 0.143.2, Pydantic 2.14.1, SQLAlchemy 2.1.4, Alembic 1.20.0 on 2026-10-15. If the project uses a newer version, check Context7 before relying on a version-specific statement here.
+
 ## Phase Structuring
 
 - **Models before routes**: SQLAlchemy/Tortoise models or Pydantic schemas must exist before route handlers reference them. Plan data layer first.
@@ -21,8 +23,8 @@ Stack-specific considerations when creating a plan for a FastAPI project.
 
 - **Sync vs async**: Check if the project uses `async def` routes with an async database driver (asyncpg, aiosqlite) or sync `def` routes. Don't mix patterns — async routes with sync DB calls block the event loop.
 - **Alembic migrations**: If using SQLAlchemy, check for Alembic. Plan `alembic revision --autogenerate` + `alembic upgrade head` as phase steps. Auto-generate may miss some changes (enum types, constraints).
-- **Dependency injection scope**: FastAPI dependencies can be function-scoped (default), or use `yield` for cleanup. Plan DB session dependencies with proper session lifecycle (commit/rollback/close).
-- **Pydantic v1 vs v2**: Check the Pydantic version. v2 uses `model_validator` instead of `validator`, `model_config` instead of `Config` inner class. Significant API differences.
+- **Dependency injection scope**: FastAPI dependencies run once per request (result cached within it by default), or use `yield` for cleanup. `yield` cleanup runs after the response is sent (default `scope="request"`), or before it with `Depends(..., scope="function")`. Plan DB session dependencies with proper session lifecycle (commit/rollback/close).
+- **Pydantic v1 vs v2**: Check the Pydantic version. v2 uses `field_validator` instead of `validator` (`model_validator` instead of `root_validator`), `model_config` instead of `Config` inner class. Significant API differences. FastAPI 0.126+ supports Pydantic v2 only.
 - **Testing**: FastAPI uses `TestClient` (sync, wraps httpx) or `AsyncClient` (async). Check which the project uses. Plan test fixtures for DB setup/teardown.
 - **Auto-docs**: FastAPI auto-generates OpenAPI docs. Plan response models and docstrings for route handlers — they appear in `/docs`.
 

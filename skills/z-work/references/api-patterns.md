@@ -2,6 +2,8 @@
 
 Loaded when the current phase involves API work (new endpoints, controllers, services, serializers).
 
+> Checked against Laravel 13.x, NestJS 12.1, FastAPI 0.143 (Pydantic 2.14), Django REST framework 3.18 on 2026-10-15. If the project uses a newer version, check Context7 before relying on a version-specific statement here.
+
 ## Implementation Checklist
 
 When implementing API endpoints, ensure each endpoint has:
@@ -12,7 +14,7 @@ When implementing API endpoints, ensure each endpoint has:
 4. **Controller/handler** — thin controller that delegates to a service for complex logic
 5. **Response format** — consistent with existing API responses (resource/serializer for success, structured error for failure)
 6. **Error handling** — appropriate HTTP status codes, meaningful error messages, no stack traces in production
-7. **Tests** — request/integration tests covering: valid input, invalid input (422), unauthorized (401/403), not found (404), and any business-rule failures
+7. **Tests** — request/integration tests covering: valid input, invalid input (422 or 400, per framework), unauthorized (401/403), not found (404), and any business-rule failures
 
 ## Conventions to Check
 

@@ -2,6 +2,8 @@
 
 Stack-specific review items for Django projects (including Django REST Framework). Loaded when `stack.framework` is `django`. Fed to review agents as additional context alongside the generic review instructions.
 
+> Checked against Django 6.1.2, Django REST Framework 3.18.3 on 2026-10-15. If the project uses a newer version, check Context7 before relying on a version-specific statement here.
+
 ## Quality Review Items
 
 ### Architecture & Patterns
@@ -58,7 +60,7 @@ Stack-specific review items for Django projects (including Django REST Framework
 - User-generated content escaped before inclusion in template context
 
 ### CSRF & Request Forgery
-- CSRF middleware enabled (not in `CSRF_EXEMPT` list unless API-only with token auth)
+- CSRF middleware enabled (`django.middleware.csrf.CsrfViewMiddleware` in `MIDDLEWARE` — not removed unless API-only with token auth)
 - `@csrf_exempt` used only on views with alternative authentication (token, API key)
 - State-changing operations use POST/PUT/PATCH/DELETE (never GET)
 

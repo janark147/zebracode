@@ -1,6 +1,8 @@
 # React Planning Notes
 
-Stack-specific considerations when creating a plan for a standalone React project (Vite, CRA, or custom bundler — NOT Next.js, which has its own file).
+Stack-specific considerations when creating a plan for a standalone React project (Vite, CRA (deprecated), or custom bundler — NOT Next.js, which has its own file).
+
+> Checked against React 19.3.1 on 2026-10-15. If the project uses a newer version, check Context7 before relying on a version-specific statement here.
 
 ## Phase Structuring
 
@@ -19,9 +21,9 @@ Stack-specific considerations when creating a plan for a standalone React projec
 ## Planning Pitfalls
 
 - **State management**: Check what the project uses (Context, Redux, Zustand, Jotai, React Query). Don't introduce a new state library without justification. React Query often eliminates the need for global state for server data.
-- **Routing**: Check for React Router version (v5 vs v6 — significantly different API). Plan route definitions alongside page components.
+- **Routing**: Check for React Router version (v5 vs v6+ — significantly different API; v8 removes `react-router-dom`, import from `react-router`). Plan route definitions alongside page components.
 - **CSS approach**: Check project convention — CSS Modules, Tailwind, styled-components, Emotion, plain CSS. Use the existing pattern.
-- **Component patterns**: Check if project uses controlled vs uncontrolled components, forwardRef patterns, compound components. Match existing style.
+- **Component patterns**: Check if project uses controlled vs uncontrolled components, forwardRef patterns (not needed in React 19+, where `ref` is a regular prop), compound components. Match existing style.
 - **Error boundaries**: Plan error boundary placement for new feature sections, especially around data-fetching components.
 - **Memo/callback**: Don't plan premature optimization. Only note `useMemo`/`useCallback` when there's a demonstrated performance concern.
 

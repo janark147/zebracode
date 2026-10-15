@@ -2,6 +2,8 @@
 
 Stack-specific considerations when creating a plan for a project using Vue.js as the frontend.
 
+> Checked against Vue 3.5.44, Inertia 3.9.1 on 2026-10-15. If the project uses a newer version, check Context7 before relying on a version-specific statement here.
+
 ## Phase Structuring
 
 - **Backend before frontend**: If the feature has both backend and frontend work, plan API/data phases before Vue component phases. Components need endpoints or data contracts to build against.
@@ -21,7 +23,7 @@ Stack-specific considerations when creating a plan for a project using Vue.js as
 
 - **Options API vs Composition API**: Check which API style the project uses. Don't mix — use the same style as existing components.
 - **Pinia vs Vuex vs no store**: Check for existing store library. Don't introduce Pinia if the project uses Vuex (or vice versa). Many features don't need a store at all — props and emits are sufficient.
-- **Vue 2 vs Vue 3**: Critical distinction. Vue 2 uses Options API, `this.$emit`, `Vue.set()`. Vue 3 uses `<script setup>`, `defineEmits()`, reactive refs. Check `package.json` for version.
+- **Vue 2 vs Vue 3**: Critical distinction. Vue 2 (end of life since 2023-12-31) uses `Vue.set()`, which Vue 3 removed. Both support the Options API (`this.$emit`); `<script setup>` (`defineEmits()`) and the Composition API (refs) are native in Vue 3 and were backported to Vue 2.7. Check `package.json` for version.
 - **Component library**: Check for existing UI library (CoreUI, Vuetify, PrimeVue, Element Plus, etc.). Plan to reuse existing components, not create duplicates.
 - **Routing guards**: If the feature involves auth-gated pages, plan navigation guards in the phase that creates the route, not separately.
 - **TypeScript integration**: If the project uses TypeScript, plan `defineProps<T>()` and `defineEmits<T>()` type definitions. Plan interface files for complex prop types.

@@ -2,6 +2,8 @@
 
 Stack-specific review items for projects using jQuery with Bootstrap or CoreUI frontend. Loaded when `stack.frontend` is `jquery`. Fed to review agents as additional context.
 
+> Checked against jQuery 4.0.0, Bootstrap 5.3.8, CoreUI 5.9.1, DataTables 3.1.4 on 2026-10-15. If the project uses a newer version, check Context7 before relying on a version-specific statement here.
+
 ## Quality Review Items
 
 ### JavaScript Patterns

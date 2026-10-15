@@ -2,6 +2,8 @@
 
 Stack-specific review items for Laravel projects. Loaded when `stack.framework` is `laravel`. Fed to review agents as additional context alongside the generic review instructions.
 
+> Checked against Laravel 13.36.0 on 2026-10-15. If the project uses a newer version, check Context7 before relying on a version-specific statement here.
+
 ## Quality Review Items
 
 ### Architecture & Patterns
@@ -44,7 +46,7 @@ Stack-specific review items for Laravel projects. Loaded when `stack.framework` 
 - Permission checks on sensitive routes (middleware or policy)
 - No IDOR vulnerabilities (user can only access resources they own / are authorized for)
 - Session handling secure (no session fixation risks)
-- Password handling uses Laravel's `Hash` facade (never plain text, never md5/sha1)
+- Password handling uses Laravel's `Hash` facade or the model's `hashed` cast (never plain text, never md5/sha1)
 
 ### Input Validation & Injection
 - All user input validated via Form Requests (not inline validation)
@@ -70,7 +72,7 @@ Stack-specific review items for Laravel projects. Loaded when `stack.framework` 
 - `.env` values never committed or exposed
 
 ### Mass Assignment
-- Models use `$fillable` (whitelist) or `$guarded` (blacklist) appropriately
+- Models use `$fillable` / `#[Fillable]` (whitelist) or `$guarded` / `#[Guarded]` (blacklist) appropriately — the attributes are Laravel 13+
 - No `Model::create($request->all())` without proper Form Request validation
 - Sensitive fields (role, permissions, is_admin) are guarded
 
