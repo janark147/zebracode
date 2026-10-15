@@ -1,148 +1,78 @@
 #!/bin/bash
-# Custom Claude Code statusline
-# Theme: detailed | Colors: true | Features: directory, git, model, context, phase, cost
+# ZebraCode status line
+# Line 1: directory · git branch · model + effort · Claude Code version
+# Line 2: context left · plan usage limits (5-hour, 7-day) · current plan phase
+# Line 3: session cost · weekly cost (ccusage) · prompt cache expiry
 
 input=$(cat)
-
-# Get the directory where this statusline script is located
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Shared plan helpers (zc_find_plan, zc_plan_phases), installed with the ZebraCode hooks
 [ -f "$SCRIPT_DIR/hooks/lib/plan.sh" ] && source "$SCRIPT_DIR/hooks/lib/plan.sh"
 
-# ---- check jq availability ----
-HAS_JQ=0
-if command -v jq >/dev/null 2>&1; then
-  HAS_JQ=1
+if ! command -v jq >/dev/null 2>&1; then
+  echo "ZebraCode status line needs jq (brew install jq)"
+  exit 0
 fi
 
-# ---- color helpers (force colors for Claude Code) ----
+# ---- colors ----
 use_color=1
 [ -n "$NO_COLOR" ] && use_color=0
+c() { [ "$use_color" -eq 1 ] && printf '\033[38;5;%sm' "$1"; }   # 256-color foreground
+rst() { [ "$use_color" -eq 1 ] && printf '\033[0m'; }
+SKY=117; PURPLE=147; GRAY=249; GREEN=150; MINT=158; PEACH=215; CORAL=203; GOLD=222; LILAC=183; YELLOW=180
 
-C() { if [ "$use_color" -eq 1 ]; then printf '\033[%sm' "$1"; fi; }
-RST() { if [ "$use_color" -eq 1 ]; then printf '\033[0m'; fi; }
+# Color for a percentage where high is bad (usage) — green, peach from 50, coral from 80
+used_color() { if [ "$1" -ge 80 ]; then c $CORAL; elif [ "$1" -ge 50 ]; then c $PEACH; else c $MINT; fi; }
 
-# ---- modern sleek colors ----
-dir_color() { if [ "$use_color" -eq 1 ]; then printf '\033[38;5;117m'; fi; }    # sky blue
-model_color() { if [ "$use_color" -eq 1 ]; then printf '\033[38;5;147m'; fi; }  # light purple
-cc_version_color() { if [ "$use_color" -eq 1 ]; then printf '\033[38;5;249m'; fi; } # light gray
-rst() { if [ "$use_color" -eq 1 ]; then printf '\033[0m'; fi; }
+# ---- read every field with one jq call ----
+# Fields are joined with the unit separator (\x1f), which never appears in the values and,
+# unlike a tab, does not collapse when a field is empty.
+IFS=$'\x1f' read -r current_dir project_dir model effort cc_version ctx_left cost \
+  five_used five_reset seven_used seven_reset cache_txt < <(echo "$input" | jq -r '
+  def pct: if . == null then "" else floor | tostring end;
+  def window($w; $fmt):
+    if $w == null or $w.used_percentage == null then ["", ""]
+    elif ($w.resets_at // 0) > 0 and $w.resets_at <= now then ["0", "reset"]
+    else [($w.used_percentage | pct), (if ($w.resets_at // 0) > 0 then ($w.resets_at | strflocaltime($fmt)) else "" end)]
+    end;
+  [ (.workspace.current_dir // .cwd // ""),
+    (.workspace.project_dir // .workspace.current_dir // .cwd // ""),
+    (.model.display_name // "Claude"),
+    (.effort.level // ""),
+    (.version // ""),
+    (.context_window.remaining_percentage | pct),
+    (.cost.total_cost_usd // "" | tostring) ]
+  + window(.rate_limits.five_hour; "%H:%M")
+  + window(.rate_limits.seven_day; "%a %d %b")
+  + [ (if .prompt_cache == null then ""
+       elif .prompt_cache.warm == true and (.prompt_cache.expires_at // 0) > now
+         then "until " + (.prompt_cache.expires_at | strflocaltime("%H:%M"))
+       else "cold" end) ]
+  | join("\u001f")' 2>/dev/null)
 
-# git utilities
-num_or_zero() { v="$1"; [[ "$v" =~ ^[0-9]+$ ]] && echo "$v" || echo 0; }
+display_dir=$(echo "$current_dir" | sed "s|^$HOME|~|")
 
-# ---- JSON extraction utilities ----
-# Pure bash JSON value extractor (fallback when jq not available)
-extract_json_string() {
-  local json="$1"
-  local key="$2"
-  local default="${3:-}"
+# ---- git branch (of the directory Claude Code was started in) ----
+git_branch=$(git -C "$project_dir" branch --show-current 2>/dev/null)
+[ -z "$git_branch" ] && git_branch=$(git -C "$project_dir" rev-parse --short HEAD 2>/dev/null)
 
-  # For nested keys like workspace.current_dir, get the last part
-  local field="${key##*.}"
-  field="${field%% *}"  # Remove any jq operators
-
-  # Try to extract string value (quoted)
-  local value=$(echo "$json" | grep -o "\"\${field}\"[[:space:]]*:[[:space:]]*\"[^\"]*\"" | head -1 | sed 's/.*:[[:space:]]*"\([^"]*\)".*/\1/')
-
-  # Convert escaped backslashes to forward slashes for Windows paths
-  if [ -n "$value" ]; then
-    value=$(echo "$value" | sed 's/\\\\/\//g')
-  fi
-
-  # If no string value found, try to extract number value (unquoted)
-  if [ -z "$value" ] || [ "$value" = "null" ]; then
-    value=$(echo "$json" | grep -o "\"\${field}\"[[:space:]]*:[[:space:]]*[0-9.]\+" | head -1 | sed 's/.*:[[:space:]]*\([0-9.]\+\).*/\1/')
-  fi
-
-  # Return value or default
-  if [ -n "$value" ] && [ "$value" != "null" ]; then
-    echo "$value"
-  else
-    echo "$default"
-  fi
-}
-
-# ---- basics ----
-if [ "$HAS_JQ" -eq 1 ]; then
-  current_dir=$(echo "$input" | jq -r '.workspace.current_dir // .cwd // "unknown"' 2>/dev/null | sed "s|^$HOME|~|g")
-  model_name=$(echo "$input" | jq -r '.model.display_name // "Claude"' 2>/dev/null)
-  session_id=$(echo "$input" | jq -r '.session_id // ""' 2>/dev/null)
-  cc_version=$(echo "$input" | jq -r '.version // ""' 2>/dev/null)
-else
-  # Bash fallback for JSON extraction
-  current_dir=$(echo "$input" | grep -o '"workspace"[[:space:]]*:[[:space:]]*{[^}]*"current_dir"[[:space:]]*:[[:space:]]*"[^"]*"' | sed 's/.*"current_dir"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/' | sed 's/\\\\/\//g')
-
-  if [ -z "$current_dir" ] || [ "$current_dir" = "null" ]; then
-    current_dir=$(echo "$input" | grep -o '"cwd"[[:space:]]*:[[:space:]]*"[^"]*"' | sed 's/.*"cwd"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/' | sed 's/\\\\/\//g')
-  fi
-
-  [ -z "$current_dir" ] && current_dir="unknown"
-  current_dir=$(echo "$current_dir" | sed "s|^$HOME|~|g")
-
-  model_name=$(echo "$input" | grep -o '"model"[[:space:]]*:[[:space:]]*{[^}]*"display_name"[[:space:]]*:[[:space:]]*"[^"]*"' | sed 's/.*"display_name"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/')
-  [ -z "$model_name" ] && model_name="Claude"
-  session_id=$(extract_json_string "$input" "session_id" "")
-  cc_version=$(echo "$input" | grep -o '"version"[[:space:]]*:[[:space:]]*"[^"]*"' | head -1 | sed 's/.*"version"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/')
-fi
-
-# ---- git colors ----
-git_color() { if [ "$use_color" -eq 1 ]; then printf '\033[38;5;150m'; fi; }  # soft green
-rst() { if [ "$use_color" -eq 1 ]; then printf '\033[0m'; fi; }
-
-# ---- git ----
-git_branch=""
-if git rev-parse --git-dir >/dev/null 2>&1; then
-  git_branch=$(git branch --show-current 2>/dev/null || git rev-parse --short HEAD 2>/dev/null)
-fi
-
-# ---- context window calculation ----
-context_pct=""
-context_color() { if [ "$use_color" -eq 1 ]; then printf '\033[1;37m'; fi; }  # default white
-
-# Claude Code passes the remaining percentage for the session's real window size (200k or 1M)
-if [ "$HAS_JQ" -eq 1 ]; then
-  context_remaining_pct=$(echo "$input" | jq -r '.context_window.remaining_percentage // empty' 2>/dev/null)
-else
-  context_remaining_pct=$(extract_json_string "$input" "remaining_percentage" "")
-fi
-context_remaining_pct="${context_remaining_pct%%.*}"   # drop decimals if any; null early in a session
-
-if [[ "$context_remaining_pct" =~ ^[0-9]+$ ]]; then
-  if [ "$context_remaining_pct" -le 20 ]; then
-    context_color() { if [ "$use_color" -eq 1 ]; then printf '\033[38;5;203m'; fi; }  # coral red
-  elif [ "$context_remaining_pct" -le 40 ]; then
-    context_color() { if [ "$use_color" -eq 1 ]; then printf '\033[38;5;215m'; fi; }  # peach
-  else
-    context_color() { if [ "$use_color" -eq 1 ]; then printf '\033[38;5;158m'; fi; }  # mint green
-  fi
-
-  context_pct="${context_remaining_pct}%"
-fi
-
-# ---- cost colors ----
-cost_color() { if [ "$use_color" -eq 1 ]; then printf '\033[38;5;222m'; fi; }   # light gold
-burn_color() { if [ "$use_color" -eq 1 ]; then printf '\033[38;5;220m'; fi; }   # bright gold
-weekly_color() { if [ "$use_color" -eq 1 ]; then printf '\033[38;5;183m'; fi; } # light purple
-phase_color() { if [ "$use_color" -eq 1 ]; then printf '\033[38;5;180m'; fi; }  # soft yellow
-
-# ---- cost extraction ----
-cost_usd=""; cost_per_hour=""
-
-if [ "$HAS_JQ" -eq 1 ]; then
-  cost_usd=$(echo "$input" | jq -r '.cost.total_cost_usd // empty' 2>/dev/null)
-  total_duration_ms=$(echo "$input" | jq -r '.cost.total_duration_ms // empty' 2>/dev/null)
-
-  if [ -n "$cost_usd" ] && [ -n "$total_duration_ms" ] && [ "$total_duration_ms" -gt 0 ]; then
-    cost_per_hour=$(echo "$cost_usd $total_duration_ms" | awk '{printf "%.2f", $1 * 3600000 / $2}')
-  fi
-else
-  cost_usd=$(echo "$input" | grep -o '"total_cost_usd"[[:space:]]*:[[:space:]]*[0-9.]*' | sed 's/.*:[[:space:]]*\([0-9.]*\).*/\1/')
-  total_duration_ms=$(echo "$input" | grep -o '"total_duration_ms"[[:space:]]*:[[:space:]]*[0-9]*' | sed 's/.*:[[:space:]]*\([0-9]*\).*/\1/')
-
-  if [ -n "$cost_usd" ] && [ -n "$total_duration_ms" ] && [ "$total_duration_ms" -gt 0 ]; then
-    cost_per_hour=$(echo "$cost_usd $total_duration_ms" | awk '{printf "%.2f", $1 * 3600000 / $2}')
+# ---- current plan phase ----
+phase_txt=""
+if [ -d "$project_dir/.claude/plans" ] && [ -n "$git_branch" ] && type zc_find_plan >/dev/null 2>&1; then
+  plan_file=$(zc_find_plan "$project_dir" "$git_branch")
+  if [ -n "$plan_file" ]; then
+    # One line per phase: number, checked, unchecked, name
+    phases=$(zc_plan_phases "$plan_file")
+    if [ -n "$phases" ]; then
+      last_phase=$(echo "$phases" | tail -1 | cut -f1)
+      current=$(echo "$phases" | awk -F'\t' '$3 > 0 { print; exit }')
+      if [ -n "$current" ]; then
+        phase_txt="Phase $(echo "$current" | cut -f1)/${last_phase}: $(echo "$current" | cut -f4)"
+      else
+        phase_txt="Phase ${last_phase}/${last_phase}: All complete"
+      fi
+    fi
   fi
 fi
 
@@ -151,7 +81,7 @@ fi
 # so read a cached result and refresh it in the background at most every 10 minutes.
 weekly_cost=""
 WEEKLY_CACHE="$SCRIPT_DIR/.statusline-weekly-cost.json"
-if command -v ccusage >/dev/null 2>&1 && [ "$HAS_JQ" -eq 1 ]; then
+if command -v ccusage >/dev/null 2>&1; then
   # A lock older than 5 minutes belongs to a refresh that was killed
   [ -n "$(find "$WEEKLY_CACHE.lock" -maxdepth 0 -mmin +5 2>/dev/null)" ] && rmdir "$WEEKLY_CACHE.lock" 2>/dev/null
   if [ -z "$(find "$WEEKLY_CACHE" -mmin -10 2>/dev/null)" ] && mkdir "$WEEKLY_CACHE.lock" 2>/dev/null; then
@@ -161,87 +91,41 @@ if command -v ccusage >/dev/null 2>&1 && [ "$HAS_JQ" -eq 1 ]; then
   [ -f "$WEEKLY_CACHE" ] && weekly_cost=$(jq -r '.weekly[-1].totalCost // empty' "$WEEKLY_CACHE" 2>/dev/null)
 fi
 
-# ---- phase detection from plan files ----
-# Plans live in the directory Claude Code was started in, which can differ from the current one
-phase_txt=""
-if [ "$HAS_JQ" -eq 1 ]; then
-  resolve_dir=$(echo "$input" | jq -r '.workspace.project_dir // .workspace.current_dir // .cwd // empty' 2>/dev/null)
+# ---- line 1: directory, branch, model + effort, version ----
+line1="📁 $(c $SKY)${display_dir}$(rst)"
+[ -n "$git_branch" ] && line1="$line1  🌿 $(c $GREEN)${git_branch}$(rst)"
+line1="$line1  🤖 $(c $PURPLE)${model}${effort:+ · $effort}$(rst)"
+[ -n "$cc_version" ] && line1="$line1  📟 $(c $GRAY)v${cc_version}$(rst)"
+
+# ---- line 2: context left, usage limits, phase ----
+# Claude Code computes remaining_percentage for the session's real window size (200k or 1M); null early in a session
+if [[ "$ctx_left" =~ ^[0-9]+$ ]]; then
+  if [ "$ctx_left" -le 20 ]; then ctx_c=$CORAL; elif [ "$ctx_left" -le 40 ]; then ctx_c=$PEACH; else ctx_c=$MINT; fi
+  line2="🧠 $(c $ctx_c)Context left: ${ctx_left}%$(rst)"
 else
-  resolve_dir=$(echo "$current_dir" | sed "s|^~|$HOME|")
-fi
-if [ -d "$resolve_dir/.claude/plans" ]; then
-  plan_branch=$(git -C "$resolve_dir" rev-parse --abbrev-ref HEAD 2>/dev/null)
-
-  if [ -n "$plan_branch" ] && type zc_find_plan >/dev/null 2>&1; then
-    plan_file=$(zc_find_plan "$resolve_dir" "$plan_branch")
-
-    if [ -n "$plan_file" ]; then
-      # One line per phase: number, checked, unchecked, name
-      phases=$(zc_plan_phases "$plan_file")
-      if [ -n "$phases" ]; then
-        last_phase=$(echo "$phases" | tail -1 | cut -f1)
-        current=$(echo "$phases" | awk -F'\t' '$3 > 0 { print; exit }')
-        if [ -n "$current" ]; then
-          phase_txt="Phase $(echo "$current" | cut -f1)/${last_phase}: $(echo "$current" | cut -f4)"
-        else
-          phase_txt="Phase ${last_phase}/${last_phase}: All complete"
-        fi
-      fi
-    fi
-  fi
+  line2="🧠 Context left: —"
 fi
 
-# ---- render statusline ----
-# Line 1: [dir] [git branch] [model] [model version] [cc version]
-printf '📁 %s%s%s' "$(dir_color)" "$current_dir" "$(rst)"
-if [ -n "$git_branch" ]; then
-  printf '  🌿 %s%s%s' "$(git_color)" "$git_branch" "$(rst)"
-fi
-printf '  🤖 %s%s%s' "$(model_color)" "$model_name" "$(rst)"
-if [ -n "$cc_version" ] && [ "$cc_version" != "null" ]; then
-  printf '  📟 %sv%s%s' "$(cc_version_color)" "$cc_version" "$(rst)"
-fi
-
-# Line 2: [context remaining %] [phase X/Y: phase name]
-line2=""
-if [ -n "$context_pct" ]; then
-  line2="🧠 $(context_color)Context: ${context_pct}$(rst)"
-fi
-if [ -n "$phase_txt" ]; then
-  if [ -n "$line2" ]; then
-    line2="$line2  📋 $(phase_color)${phase_txt}$(rst)"
+limit_txt() {   # <label> <used %> <reset time or "reset">
+  [ -z "$2" ] && return
+  if [ "$3" = "reset" ]; then
+    printf '%s%s reset%s' "$(c $MINT)" "$1" "$(rst)"
   else
-    line2="📋 $(phase_color)${phase_txt}$(rst)"
+    printf '%s%s %s%%%s%s' "$(used_color "$2")" "$1" "$2" "${3:+ (resets $3)}" "$(rst)"
   fi
-fi
-if [ -z "$line2" ]; then
-  line2="🧠 $(context_color)Context: TBD$(rst)"
-fi
+}
+limits=$(limit_txt 5h "$five_used" "$five_reset")
+seven=$(limit_txt 7d "$seven_used" "$seven_reset")
+[ -n "$seven" ] && limits="${limits:+$limits · }$seven"
+[ -n "$limits" ] && line2="$line2  ⏳ $limits"
+[ -n "$phase_txt" ] && line2="$line2  📋 $(c $YELLOW)${phase_txt}$(rst)"
 
-# Line 3: [session $X.XX ($Y.YY/h)] [weekly $Z.ZZ]
+# ---- line 3: session cost, weekly cost, prompt cache ----
 line3=""
-if [ -n "$cost_usd" ] && [[ "$cost_usd" =~ ^[0-9.]+$ ]]; then
-  if [ -n "$cost_per_hour" ] && [[ "$cost_per_hour" =~ ^[0-9.]+$ ]]; then
-    cost_per_hour_formatted=$(printf '%.2f' "$cost_per_hour")
-    line3="💰 $(cost_color)\$$(printf '%.2f' "$cost_usd")$(rst) ($(burn_color)\$${cost_per_hour_formatted}/h$(rst))"
-  else
-    line3="💰 $(cost_color)\$$(printf '%.2f' "$cost_usd")$(rst)"
-  fi
-fi
-if [ -n "$weekly_cost" ] && [[ "$weekly_cost" =~ ^[0-9.]+$ ]]; then
-  weekly_formatted=$(printf '%.2f' "$weekly_cost")
-  if [ -n "$line3" ]; then
-    line3="$line3  📅 $(weekly_color)\$${weekly_formatted} this week$(rst)"
-  else
-    line3="📅 $(weekly_color)\$${weekly_formatted} this week$(rst)"
-  fi
-fi
+[[ "$cost" =~ ^[0-9.]+$ ]] && line3="💰 $(c $GOLD)\$$(printf '%.2f' "$cost")$(rst)"
+[[ "$weekly_cost" =~ ^[0-9.]+$ ]] && line3="${line3:+$line3  }📅 $(c $LILAC)\$$(printf '%.2f' "$weekly_cost") this week$(rst)"
+[ -n "$cache_txt" ] && line3="${line3:+$line3  }💾 $(c $GRAY)cache ${cache_txt}$(rst)"
 
-# Print lines
-if [ -n "$line2" ]; then
-  printf '\n%s' "$line2"
-fi
-if [ -n "$line3" ]; then
-  printf '\n%s' "$line3"
-fi
-printf '\n'
+printf '%s\n%s\n' "$line1" "$line2"
+[ -n "$line3" ] && printf '%s\n' "$line3"
+exit 0
