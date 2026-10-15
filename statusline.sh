@@ -1,34 +1,20 @@
 #!/bin/bash
 # Custom Claude Code statusline
 # Theme: detailed | Colors: true | Features: directory, git, model, context, phase, cost
-STATUSLINE_VERSION="1.4.0"
 
 input=$(cat)
 
 # Get the directory where this statusline script is located
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-LOG_FILE="${SCRIPT_DIR}/statusline.log"
-TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
+
+# Shared plan helpers (zc_find_plan, zc_plan_phases), installed with the ZebraCode hooks
+[ -f "$SCRIPT_DIR/hooks/lib/plan.sh" ] && source "$SCRIPT_DIR/hooks/lib/plan.sh"
 
 # ---- check jq availability ----
 HAS_JQ=0
 if command -v jq >/dev/null 2>&1; then
   HAS_JQ=1
 fi
-
-# ---- logging ----
-{
-  echo "[$TIMESTAMP] Status line triggered (cc-statusline v${STATUSLINE_VERSION})"
-  echo "[$TIMESTAMP] Input:"
-  if [ "$HAS_JQ" -eq 1 ]; then
-    echo "$input" | jq . 2>/dev/null || echo "$input"
-    echo "[$TIMESTAMP] Using jq for JSON parsing"
-  else
-    echo "$input"
-    echo "[$TIMESTAMP] WARNING: jq not found, using bash fallback for JSON parsing"
-  fi
-  echo "---"
-} >> "$LOG_FILE" 2>/dev/null
 
 # ---- color helpers (force colors for Claude Code) ----
 use_color=1
@@ -115,51 +101,24 @@ fi
 context_pct=""
 context_color() { if [ "$use_color" -eq 1 ]; then printf '\033[1;37m'; fi; }  # default white
 
-get_max_context() {
-  local model_name="$1"
-  case "$model_name" in
-    *"Opus 4"*|*"opus 4"*|*"Opus"*|*"opus"*)
-      echo "200000"
-      ;;
-    *"Sonnet 4"*|*"sonnet 4"*|*"Sonnet 3.5"*|*"sonnet 3.5"*|*"Sonnet"*|*"sonnet"*)
-      echo "200000"
-      ;;
-    *"Haiku 3.5"*|*"haiku 3.5"*|*"Haiku 4"*|*"haiku 4"*|*"Haiku"*|*"haiku"*)
-      echo "200000"
-      ;;
-    *"Claude 3 Haiku"*|*"claude 3 haiku"*)
-      echo "100000"
-      ;;
-    *)
-      echo "200000"
-      ;;
-  esac
-}
+# Claude Code passes the remaining percentage for the session's real window size (200k or 1M)
+if [ "$HAS_JQ" -eq 1 ]; then
+  context_remaining_pct=$(echo "$input" | jq -r '.context_window.remaining_percentage // empty' 2>/dev/null)
+else
+  context_remaining_pct=$(extract_json_string "$input" "remaining_percentage" "")
+fi
+context_remaining_pct="${context_remaining_pct%%.*}"   # drop decimals if any; null early in a session
 
-if [ -n "$session_id" ] && [ "$HAS_JQ" -eq 1 ]; then
-  MAX_CONTEXT=$(get_max_context "$model_name")
-
-  project_dir=$(echo "$current_dir" | sed "s|~|$HOME|g" | sed 's|/|-|g' | sed 's|^-||')
-  session_file="$HOME/.claude/projects/-${project_dir}/${session_id}.jsonl"
-
-  if [ -f "$session_file" ]; then
-    latest_tokens=$(tail -20 "$session_file" | jq -r 'select(.message.usage) | .message.usage | ((.input_tokens // 0) + (.cache_read_input_tokens // 0))' 2>/dev/null | tail -1)
-
-    if [ -n "$latest_tokens" ] && [ "$latest_tokens" -gt 0 ]; then
-      context_used_pct=$(( latest_tokens * 100 / MAX_CONTEXT ))
-      context_remaining_pct=$(( 100 - context_used_pct ))
-
-      if [ "$context_remaining_pct" -le 20 ]; then
-        context_color() { if [ "$use_color" -eq 1 ]; then printf '\033[38;5;203m'; fi; }  # coral red
-      elif [ "$context_remaining_pct" -le 40 ]; then
-        context_color() { if [ "$use_color" -eq 1 ]; then printf '\033[38;5;215m'; fi; }  # peach
-      else
-        context_color() { if [ "$use_color" -eq 1 ]; then printf '\033[38;5;158m'; fi; }  # mint green
-      fi
-
-      context_pct="${context_remaining_pct}%"
-    fi
+if [[ "$context_remaining_pct" =~ ^[0-9]+$ ]]; then
+  if [ "$context_remaining_pct" -le 20 ]; then
+    context_color() { if [ "$use_color" -eq 1 ]; then printf '\033[38;5;203m'; fi; }  # coral red
+  elif [ "$context_remaining_pct" -le 40 ]; then
+    context_color() { if [ "$use_color" -eq 1 ]; then printf '\033[38;5;215m'; fi; }  # peach
+  else
+    context_color() { if [ "$use_color" -eq 1 ]; then printf '\033[38;5;158m'; fi; }  # mint green
   fi
+
+  context_pct="${context_remaining_pct}%"
 fi
 
 # ---- cost colors ----
@@ -188,82 +147,49 @@ else
 fi
 
 # ---- weekly cost from ccusage ----
+# ccusage takes ~20s, and Claude Code cancels a status line run when the next update arrives,
+# so read a cached result and refresh it in the background at most every 10 minutes.
 weekly_cost=""
+WEEKLY_CACHE="$SCRIPT_DIR/.statusline-weekly-cost.json"
 if command -v ccusage >/dev/null 2>&1 && [ "$HAS_JQ" -eq 1 ]; then
-  weekly_output=""
-  if command -v timeout >/dev/null 2>&1; then
-    weekly_output=$(timeout 5s ccusage weekly --json 2>/dev/null)
-  elif command -v gtimeout >/dev/null 2>&1; then
-    weekly_output=$(gtimeout 5s ccusage weekly --json 2>/dev/null)
-  else
-    weekly_output=$(ccusage weekly --json 2>/dev/null)
+  # A lock older than 5 minutes belongs to a refresh that was killed
+  [ -n "$(find "$WEEKLY_CACHE.lock" -maxdepth 0 -mmin +5 2>/dev/null)" ] && rmdir "$WEEKLY_CACHE.lock" 2>/dev/null
+  if [ -z "$(find "$WEEKLY_CACHE" -mmin -10 2>/dev/null)" ] && mkdir "$WEEKLY_CACHE.lock" 2>/dev/null; then
+    nohup bash -c 'ccusage weekly --json > "$1.tmp" 2>/dev/null && mv "$1.tmp" "$1"; rmdir "$1.lock"' _ "$WEEKLY_CACHE" \
+      >/dev/null 2>&1 </dev/null &
   fi
-  if [ -n "$weekly_output" ]; then
-    weekly_cost=$(echo "$weekly_output" | jq -r '.weekly[-1].totalCost // empty' 2>/dev/null)
-  fi
+  [ -f "$WEEKLY_CACHE" ] && weekly_cost=$(jq -r '.weekly[-1].totalCost // empty' "$WEEKLY_CACHE" 2>/dev/null)
 fi
 
 # ---- phase detection from plan files ----
+# Plans live in the directory Claude Code was started in, which can differ from the current one
 phase_txt=""
-resolve_dir=$(echo "$current_dir" | sed "s|^~|$HOME|")
+if [ "$HAS_JQ" -eq 1 ]; then
+  resolve_dir=$(echo "$input" | jq -r '.workspace.project_dir // .workspace.current_dir // .cwd // empty' 2>/dev/null)
+else
+  resolve_dir=$(echo "$current_dir" | sed "s|^~|$HOME|")
+fi
 if [ -d "$resolve_dir/.claude/plans" ]; then
-  plan_branch=""
-  if [ -n "$git_branch" ]; then
-    plan_branch="$git_branch"
-  else
-    plan_branch=$(cd "$resolve_dir" 2>/dev/null && git rev-parse --abbrev-ref HEAD 2>/dev/null)
-  fi
+  plan_branch=$(git -C "$resolve_dir" rev-parse --abbrev-ref HEAD 2>/dev/null)
 
-  if [ -n "$plan_branch" ]; then
-    plan_file=""
-    for f in "$resolve_dir/.claude/plans/"*.md; do
-      [ ! -f "$f" ] && continue
-      plan_basename=$(basename "$f" .md)
-      if [[ "$plan_branch" == *"$plan_basename"* || "$plan_basename" == *"$plan_branch"* ]]; then
-        plan_file="$f"
-        break
-      fi
-    done
+  if [ -n "$plan_branch" ] && type zc_find_plan >/dev/null 2>&1; then
+    plan_file=$(zc_find_plan "$resolve_dir" "$plan_branch")
 
     if [ -n "$plan_file" ]; then
-      total_phases=$(grep -cE '^#{2,3} .*[Pp]hase' "$plan_file" 2>/dev/null || echo 0)
-      if [ "$total_phases" -gt 0 ]; then
-        phase_number=0
-        current_phase_number=0
-        current_phase_name=""
-
-        while IFS= read -r line; do
-          if [[ "$line" =~ ^#{2,3}\ .*[Pp]hase ]]; then
-            ((phase_number++))
-            phase_has_unchecked=false
-            in_phase=$(echo "$line" | sed 's/^#\{2,3\} //')
-          elif [[ "$line" == *"- [ ]"* ]]; then
-            if [ "$current_phase_number" -eq 0 ]; then
-              current_phase_number=$phase_number
-              current_phase_name="$in_phase"
-            fi
-          fi
-        done < "$plan_file"
-
-        if [ "$current_phase_number" -gt 0 ]; then
-          # Strip "Phase N: " or "Phase N — " prefix to avoid duplication
-          clean_name=$(echo "$current_phase_name" | sed 's/^[Pp]hase [0-9]*[:.—–-] *//')
-          phase_txt="Phase ${current_phase_number}/${total_phases}: ${clean_name}"
+      # One line per phase: number, checked, unchecked, name
+      phases=$(zc_plan_phases "$plan_file")
+      if [ -n "$phases" ]; then
+        last_phase=$(echo "$phases" | tail -1 | cut -f1)
+        current=$(echo "$phases" | awk -F'\t' '$3 > 0 { print; exit }')
+        if [ -n "$current" ]; then
+          phase_txt="Phase $(echo "$current" | cut -f1)/${last_phase}: $(echo "$current" | cut -f4)"
         else
-          phase_txt="Phase ${total_phases}/${total_phases}: All complete"
+          phase_txt="Phase ${last_phase}/${last_phase}: All complete"
         fi
       fi
     fi
   fi
 fi
-
-# ---- log extracted data ----
-{
-  echo "[$TIMESTAMP] Extracted: dir=${current_dir:-}, model=${model_name:-}, git=${git_branch:-}, context=${context_pct:-}, cost=${cost_usd:-}, cost_ph=${cost_per_hour:-}, weekly=${weekly_cost:-}, phase=${phase_txt:-}"
-  if [ "$HAS_JQ" -eq 0 ]; then
-    echo "[$TIMESTAMP] Note: Context and weekly cost require jq for full functionality"
-  fi
-} >> "$LOG_FILE" 2>/dev/null
 
 # ---- render statusline ----
 # Line 1: [dir] [git branch] [model] [model version] [cc version]
